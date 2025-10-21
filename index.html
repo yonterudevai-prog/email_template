@@ -26,17 +26,21 @@
 </head>
 <body class="bg-gray-50 min-h-screen p-4 sm:p-8 font-sans">
     <script>
-        // Candidate's Hardcoded Details
+        // Candidate's Details
         const CANDIDATE_NAME = "Yallaiah Onteru";
-        const CANDIDATE_EMAIL = "yonteru.dev.ai@engineer";
+        const CANDIDATE_EMAIL = "yonteru.dev.ai@gmail.com"; // Updated Email
         const CANDIDATE_PHONE = "973-327-1133";
-        // Added 10 years experience as requested
+        // Experience included as requested
         const CANDIDATE_EXPERIENCE = "10 years"; 
 
         // Consolidated list of Job Portals and Vendor Portals
         const PORTALS = [
             // Job Portals
-            "TechFetch — techfetch.com","Linked-Post" "CorpToCorp.org — corptocorp.org", "BenchInfo — benchinfo.com", "Recruut — recruut.com", "Dice — dice.com", "JobDiva — jobdiva.com", "ZipRecruiter — ziprecruiter.com", "Indeed — indeed.com", "Glassdoor — glassdoor.com", "LinkedIn Jobs — linkedin.com/jobs", "Monster — monster.com", "Jooble — jooble.org", "SimplyHired — simplyhired.com", "CareerBuilder — careerbuilder.com",
+            "TechFetch — techfetch.com", "CorpToCorp.org — corptocorp.org", "BenchInfo — benchinfo.com", "Recruut — recruut.com", "Dice — dice.com", "JobDiva — jobdiva.com", "ZipRecruiter — ziprecruiter.com", "Indeed — indeed.com", "Glassdoor — glassdoor.com", 
+            // LinkedIn options separated as requested
+            "LinkedIn Jobs", 
+            "LinkedIn Post",
+            "Monster — monster.com", "Jooble — jooble.org", "SimplyHired — simplyhired.com", "CareerBuilder — careerbuilder.com",
             // Vendor Portals & Staffing Agencies (Consolidated Names)
             "Denken Solutions", "PurpleDrive", "Nexzentek RMT Portal", "GovServicesHub (ZohoRecruit)", "Tryfacta", "SibiTalent", "e-Solutions Inc.", "JobsAtSwift", "Crossfire Consulting", "Axelon", "GlobalSoft Systems", "Stefanini Jobs", "The Fountain Group", "AIT Global Inc.", "Vaco Jobs", "The Planet Group Careers", "Innova Solutions USA", "VSoft Consulting", "Primary Talent Partners", "ABSLI", "Cybsearch", "Byteware Inc.", "Addison Group", "TekHire Solutions", "Curately AI Jobs (ASK Consulting)", "Yochana Tech Careers", "MODIS", "INSIGHT GLOBAL", "PARAGON IT", "DISYS STAFFING", "INSYS", "BEACON HILL STAFFING", "ROBERT HALF", "VEREDUS CORP", "TEK SYSTEMS", "RANDSTAD USA", "EXPERIS", "K FORCE", "YORK SOLUTIONS (MN)", "THE CSI COMPANIES", "GLOBAL TECH SERVICES", "GLOBAL TECHNICAL TALENT", "BRIXTON GROUP", "THE MIDTOWN GROUP", "NET MATRIX SOLUTIONS", "MATRIX GROUP", "PT-CORP (PARADIGM)", "EDI STAFFING", "MONDO", "ITTMI (MITCHELL MARTIN)", "PINPOINT", "ASCENT GROUP", "ADVANTAGE RESOURCES", "COOK SYSTEMS", "CONEXESS", "ISYMMETRY", "VITAVER SOLUTIONS", "DIVERSANT", "SIGNATURE CONSULTING", "ELIASSEN GROUP", "PANORAMIC SOLUTIONS", "FARENHEIT-IT", "SKILL STORM", "MATTEN SILVER", "PROKARMA", "STARPOINT", "OVERTURE PARTNERS", "ADVANTEX P", "INT TECHNOLOGIES", "APEX SYSTEMS", "NTT DATA", "PANTHER-IT", "PYRAMID CI", "COMPUTER FUTURES", "EPITEC", "S-COM-USA", "HARVEY-NASH-USA", "SCINTEL", "ASK STAFFING", "BNA STAFFING", "CREATIVE GROUP", "SOFTRANS", "SELECT GROUP", "SOGETI", "CIBER", "ABACUS SERVICES", "ADAPTIVE SOLUTIONS GROUP", "MIND TREE", "Y&L CONSULTING", "GENUENT", "WASHINGTON FRANK", "LumenAlta", "CEIPAL", "Adzuna", "Top Equator", "Fortuna BMC", "Delta Computer Consulting", "Horizontal Talent", "Nityo", "Collabera", "Deloitte Open Talent", "Zealogics LLC", "Realign LLC", "Avance Services", "Infojini Consulting", "CyberThink", "System One", "ETSAZ", "GSK Solutions", "Inficare Tech", "Outcome Logix", "Seneca HQ", "Omega Hires", "Tekshapers", "PFORCE Inc.", "Solgenie", "Synergent", "Nava Software", "Eitacies", "EdifyTech", "Empower Jobs", "Aptask", "Technogen Inc", "Arnex Solution", "AgreeYa", "Boeing Careers", "Triforce Inc", "CCS Global Tech", "CloudBigD", "Arrowcore", "Innovee", "NJ Tech Inc", "Oracle Cloud HCM", "Techgene", "Workwave", "Remotive", "Serigor", "Piper Companies", "TSR Consulting", "PowerSolv", "USGRP Inc.", "Lorven Tech", "Cynet Systems", "Mphasis", "Godigitive", "Promantus Inc.", "ASK Inc.", "Friedkin Careers", "Smartsearch Online", "OSI Engineering", "Peta Data Software", "Talent Groups", "Saransh Inc", "Sligosoft", "InterSources Inc", "Hire Talent", "Jobrapido", "Tential", "IODatasphere", "Trigyn", "Novalink Solutions"
         ];
@@ -67,6 +71,14 @@
                 return;
             }
 
+            // Define the custom closing/footer structure
+            const EMAIL_CLOSING = `
+Best regards, 
+${CANDIDATE_NAME} 
+Email: ${CANDIDATE_EMAIL} 
+Phone: ${CANDIDATE_PHONE}
+`;
+
             const prompt = `
 Act as a world-class email expert specialized in crafting compelling and professional C2C job application emails. Your task is to write a concise, professional, and targeted email to a recruiter for the job described below.
 
@@ -92,7 +104,10 @@ ${jd}
     * Start by explicitly mentioning where the post was seen (e.g., "I saw your post on ${platform}").
     * State the candidate's strong interest and high alignment with the job's core requirements, explicitly mentioning their **${CANDIDATE_EXPERIENCE} of professional experience**.
     * Briefly mention the key skills or technologies that match the JD (infer the most relevant skills from the JD).
-    * Clearly provide the candidate's contact information (${CANDIDATE_EMAIL} and ${CANDIDATE_PHONE}) in the closing.
+    * **Crucial Closing Format:** The email must end with the following exact closing signature (including all line breaks):
+        """
+        ${EMAIL_CLOSING}
+        """
 4.  **Formatting:** Provide only the subject line and the body of the email. Do NOT include any extra conversational text or markdown headings in your final output, as the user will copy it directly into an email.
 5.  **Subject Line:** Must be professional, clear, and include the job title (if inferable) or primary technology.
 `;
@@ -134,7 +149,7 @@ ${jd}
 
         <!-- Candidate Details Card -->
         <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg mb-8">
-            <h2 class="text-lg font-semibold text-indigo-800 mb-2">Candidate Details (Hardcoded)</h2>
+            <h2 class="text-lg font-semibold text-indigo-800 mb-2">Candidate Details (Final View)</h2>
             <div class="flex flex-col sm:flex-row sm:space-x-8 text-sm text-gray-700">
                 <p><strong>Name:</strong> <span id="candidateName" class="font-medium"></span></p>
                 <p><strong>Email:</strong> <span id="candidateEmail" class="font-medium"></span></p>
@@ -162,7 +177,7 @@ ${jd}
                     id="platformInput"
                     list="platformDatalist"
                     class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                    placeholder="E.g., LinkedIn, Dice, PurpleDrive..."
+                    placeholder="E.g., LinkedIn Post, LinkedIn Jobs, PurpleDrive..."
                 >
                 <datalist id="platformDatalist"></datalist>
             </div>
