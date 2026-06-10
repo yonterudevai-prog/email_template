@@ -2,230 +2,1395 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruiter Email Prompt Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Work Experience | Reverse Chronology & Domain Roles</title>
     <style>
-        /* Custom scrollbar for text area */
-        #jobDescription, #generatedPrompt {
-            scrollbar-width: thin;
-            scrollbar-color: #4f46e5 #e5e7eb;
-        }
-        #jobDescription::-webkit-scrollbar, #generatedPrompt::-webkit-scrollbar {
-            width: 8px;
-        }
-        #jobDescription::-webkit-scrollbar-thumb, #generatedPrompt::-webkit-scrollbar-thumb {
-            background-color: #4f46e5;
-            border-radius: 20px;
-        }
-        #jobDescription::-webkit-scrollbar-track, #generatedPrompt::-webkit-scrollbar-track {
-            background-color: #e5e7eb;
-            border-radius: 20px;
-        }
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', sans-serif; }
+        body { background: #f1f5f9; margin: 0; padding: 2rem 1rem; color: #0a2540; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 2rem; box-shadow: 0 25px 45px -12px rgba(0,0,0,0.2); overflow: hidden; }
+        .form-panel { padding: 2rem 2rem 1.5rem; background: linear-gradient(115deg, #ffffff 0%, #fef9f0 100%); border-bottom: 1px solid #e2e8f0; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
+        .field { display: flex; flex-direction: column; gap: 0.4rem; }
+        label { font-weight: 600; font-size: 0.85rem; color: #1e4668; }
+        input, select { padding: 0.7rem 1rem; border-radius: 1rem; border: 1px solid #cbd5e1; background: white; font-size: 0.9rem; }
+        .date-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 0.5rem; }
+        .date-row select { padding: 0.7rem 0.5rem; font-size: 0.85rem; }
+        button { background: #0f3b5f; color: white; border: none; padding: 0.8rem 1.8rem; border-radius: 2rem; font-weight: 700; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 0.5rem; transition: background 0.2s, transform 0.15s; }
+        button:hover { background: #1e5a7d; transform: scale(0.98); }
+        .results { padding: 2rem; background: #fefcf7; }
+        .exp-card { background: white; border-radius: 1.5rem; padding: 1rem 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e9edf2; }
+        .badge { background: #eef2ff; padding: 0.25rem 0.9rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; color: #1e40af; display: inline-block; }
+        .badge-case { background: #fef3c7; padding: 0.25rem 0.9rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 600; color: #92400e; display: inline-block; margin-left: 0.5rem; }
+        .client-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.2rem; }
+        .client-item { background: #fafcff; border-left: 5px solid #2c7da0; padding: 1rem 1.3rem; border-radius: 1.2rem; }
+        .client-item.state-item { border-left-color: #f59e0b; background: #fffdf7; }
+        .client-item.latest-item { border-left-color: #059669; background: #f0fdf4; }
+        .client-item.early-item { border-left-color: #6366f1; background: #f5f3ff; }
+        .client-item.tertiary-item { border-left-color: #8b5cf6; background: #faf5ff; }
+        .warning { background: #fff3e3; border-left: 5px solid #f59e0b; padding: 0.75rem 1rem; border-radius: 1rem; margin: 0.75rem 0; font-size: 0.85rem; }
+        .error-box { background: #fef2f2; border-left: 5px solid #dc2626; padding: 0.75rem 1rem; border-radius: 1rem; margin: 0.75rem 0; color: #991b1b; }
+        .grid-summary { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; background: #eef4ff; padding: 1rem 1.5rem; border-radius: 1.5rem; margin-bottom: 1.2rem; }
+        .grid-summary > div { min-width: 200px; }
+        .flex-between { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; }
+        .company { font-weight: 700; color: #075985; }
+        .company a { color: #075985; text-decoration: none; }
+        .company a:hover { text-decoration: underline; }
+        .duration { font-family: monospace; font-weight: 500; }
+        .role-tag { background: #e9ecef; border-radius: 1rem; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 500; display: inline-block; margin-top: 6px; }
+        .date-range { font-size: 0.75rem; color: #4a5568; margin-top: 4px; }
+        .level-indicator { display: inline-block; background: #dbeafe; color: #1e40af; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 0.5rem; margin-left: 6px; vertical-align: middle; }
+        .formula-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 1rem; padding: 1rem 1.3rem; margin-bottom: 1.2rem; font-size: 0.78rem; line-height: 1.8; color: #166534; }
+        .formula-box code { background: #dcfce7; padding: 0.1rem 0.4rem; border-radius: 0.3rem; font-size: 0.75rem; }
+        .formula-box .step-warn { color: #b45309; background: #fef3c7; padding: 0.1rem 0.4rem; border-radius: 0.3rem; font-size: 0.75rem; }
+        .timeline-visual { display: flex; flex-direction: column; gap: 0; margin: 1rem 0 1.5rem 0; position: relative; padding-left: 2.2rem; }
+        .timeline-visual::before { content: ''; position: absolute; left: 0.6rem; top: 0.5rem; bottom: 0.5rem; width: 3px; border-radius: 2px; }
+        .tl-3::before { background: linear-gradient(to bottom, #059669, #f59e0b, #6366f1); }
+        .tl-4::before { background: linear-gradient(to bottom, #059669, #f59e0b, #8b5cf6, #6366f1); }
+        .tl-node { position: relative; padding: 0.5rem 0; }
+        .tl-node::before { content: ''; position: absolute; left: -1.85rem; top: 0.85rem; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 2px currentColor; }
+        .tl-node.tl-latest { color: #059669; }
+        .tl-node.tl-state { color: #f59e0b; }
+        .tl-node.tl-early { color: #6366f1; }
+        .tl-node.tl-tertiary { color: #8b5cf6; }
+        .tl-label { font-size: 0.72rem; font-weight: 600; }
+        .tl-dates { font-size: 0.68rem; color: #64748b; font-family: monospace; }
+        .tl-dur { font-size: 0.68rem; font-weight: 600; }
+        .tl-dur.dur-warn { color: #b45309; }
+        .tl-dur.dur-ok { color: #059669; }
+        .allocation-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin: 0.8rem 0; }
+        .allocation-table th { background: #1e40af; color: white; padding: 0.5rem 0.7rem; text-align: left; font-weight: 600; }
+        .allocation-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid #e2e8f0; }
+        .allocation-table tr:nth-child(even) { background: #f8fafc; }
+        .allocation-table .total-row { background: #eef2ff; font-weight: 700; }
+        .allocation-table .warn-cell { color: #b45309; font-weight: 600; }
+        @media (max-width: 720px) { .form-panel, .results { padding: 1.25rem; } .grid-summary > div { min-width: 140px; } }
+        footer { font-size: 0.7rem; text-align: center; color: #5b6e8c; padding: 1rem; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 sm:p-8 font-sans">
-    <script>
-        // Candidate's Details
-        const CANDIDATE_NAME = "Yallaiah Onteru";
-        const CANDIDATE_EMAIL = "yonteru.dev.ai@gmail.com"; // Updated Email
-        const CANDIDATE_PHONE = "973-327-1133";
-        // Experience included as requested
-        const CANDIDATE_EXPERIENCE = "10 years"; 
-
-        // Consolidated list of Job Portals and Vendor Portals
-        const PORTALS = [
-            // Job Portals
-            "TechFetch — techfetch.com", "CorpToCorp.org — corptocorp.org", "BenchInfo — benchinfo.com", "Recruut — recruut.com", "Dice — dice.com", "JobDiva — jobdiva.com", "ZipRecruiter — ziprecruiter.com", "Indeed — indeed.com", "Glassdoor — glassdoor.com", 
-            // LinkedIn options separated as requested
-            "LinkedIn Jobs", 
-            "LinkedIn Post",
-            "Monster — monster.com", "Jooble — jooble.org", "SimplyHired — simplyhired.com", "CareerBuilder — careerbuilder.com",
-            // Vendor Portals & Staffing Agencies (Consolidated Names)
-            "Denken Solutions", "PurpleDrive", "Nexzentek RMT Portal", "GovServicesHub (ZohoRecruit)", "Tryfacta", "SibiTalent", "e-Solutions Inc.", "JobsAtSwift", "Crossfire Consulting", "Axelon", "GlobalSoft Systems", "Stefanini Jobs", "The Fountain Group", "AIT Global Inc.", "Vaco Jobs", "The Planet Group Careers", "Innova Solutions USA", "VSoft Consulting", "Primary Talent Partners", "ABSLI", "Cybsearch", "Byteware Inc.", "Addison Group", "TekHire Solutions", "Curately AI Jobs (ASK Consulting)", "Yochana Tech Careers", "MODIS", "INSIGHT GLOBAL", "PARAGON IT", "DISYS STAFFING", "INSYS", "BEACON HILL STAFFING", "ROBERT HALF", "VEREDUS CORP", "TEK SYSTEMS", "RANDSTAD USA", "EXPERIS", "K FORCE", "YORK SOLUTIONS (MN)", "THE CSI COMPANIES", "GLOBAL TECH SERVICES", "GLOBAL TECHNICAL TALENT", "BRIXTON GROUP", "THE MIDTOWN GROUP", "NET MATRIX SOLUTIONS", "MATRIX GROUP", "PT-CORP (PARADIGM)", "EDI STAFFING", "MONDO", "ITTMI (MITCHELL MARTIN)", "PINPOINT", "ASCENT GROUP", "ADVANTAGE RESOURCES", "COOK SYSTEMS", "CONEXESS", "ISYMMETRY", "VITAVER SOLUTIONS", "DIVERSANT", "SIGNATURE CONSULTING", "ELIASSEN GROUP", "PANORAMIC SOLUTIONS", "FARENHEIT-IT", "SKILL STORM", "MATTEN SILVER", "PROKARMA", "STARPOINT", "OVERTURE PARTNERS", "ADVANTEX P", "INT TECHNOLOGIES", "APEX SYSTEMS", "NTT DATA", "PANTHER-IT", "PYRAMID CI", "COMPUTER FUTURES", "EPITEC", "S-COM-USA", "HARVEY-NASH-USA", "SCINTEL", "ASK STAFFING", "BNA STAFFING", "CREATIVE GROUP", "SOFTRANS", "SELECT GROUP", "SOGETI", "CIBER", "ABACUS SERVICES", "ADAPTIVE SOLUTIONS GROUP", "MIND TREE", "Y&L CONSULTING", "GENUENT", "WASHINGTON FRANK", "LumenAlta", "CEIPAL", "Adzuna", "Top Equator", "Fortuna BMC", "Delta Computer Consulting", "Horizontal Talent", "Nityo", "Collabera", "Deloitte Open Talent", "Zealogics LLC", "Realign LLC", "Avance Services", "Infojini Consulting", "CyberThink", "System One", "ETSAZ", "GSK Solutions", "Inficare Tech", "Outcome Logix", "Seneca HQ", "Omega Hires", "Tekshapers", "PFORCE Inc.", "Solgenie", "Synergent", "Nava Software", "Eitacies", "EdifyTech", "Empower Jobs", "Aptask", "Technogen Inc", "Arnex Solution", "AgreeYa", "Boeing Careers", "Triforce Inc", "CCS Global Tech", "CloudBigD", "Arrowcore", "Innovee", "NJ Tech Inc", "Oracle Cloud HCM", "Techgene", "Workwave", "Remotive", "Serigor", "Piper Companies", "TSR Consulting", "PowerSolv", "USGRP Inc.", "Lorven Tech", "Cynet Systems", "Mphasis", "Godigitive", "Promantus Inc.", "ASK Inc.", "Friedkin Careers", "Smartsearch Online", "OSI Engineering", "Peta Data Software", "Talent Groups", "Saransh Inc", "Sligosoft", "InterSources Inc", "Hire Talent", "Jobrapido", "Tential", "IODatasphere", "Trigyn", "Novalink Solutions"
-        ];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const datalist = document.getElementById('platformDatalist');
-            PORTALS.forEach(portal => {
-                const option = document.createElement('option');
-                option.value = portal;
-                datalist.appendChild(option);
-            });
-            // Display candidate details
-            document.getElementById('candidateName').textContent = CANDIDATE_NAME;
-            document.getElementById('candidateEmail').textContent = CANDIDATE_EMAIL;
-            document.getElementById('candidatePhone').textContent = CANDIDATE_PHONE;
-            // Display the new experience field
-            document.getElementById('candidateExperience').textContent = CANDIDATE_EXPERIENCE; 
-        });
-
-        function generatePrompt() {
-            const jd = document.getElementById('jobDescription').value.trim();
-            const platform = document.getElementById('platformInput').value.trim() || "a job board or vendor portal";
-            const email = document.getElementById('recipientEmail').value.trim() || "[Recipient Email]";
-
-            if (!jd) {
-                document.getElementById('generatedPrompt').value = "Please paste the Job Description or post details to generate the prompt.";
-                document.getElementById('generatedPromptContainer').classList.remove('hidden');
-                return;
-            }
-
-            // Define the custom closing/footer structure
-            const EMAIL_CLOSING = `
-Best regards, 
-${CANDIDATE_NAME} 
-Email: ${CANDIDATE_EMAIL} 
-Phone: ${CANDIDATE_PHONE}
-`;
-
-            const prompt = `
-Act as a world-class email expert specialized in crafting compelling and professional C2C job application emails. Your task is to write a concise, professional, and targeted email to a recruiter for the job described below.
-
---- CANDIDATE PROFILE ---
-The candidate is **${CANDIDATE_NAME}**.
-Experience Level: **${CANDIDATE_EXPERIENCE}**
-Contact Email: ${CANDIDATE_EMAIL}
-Phone Number: ${CANDIDATE_PHONE}
-The candidate has strong technical skills and their profile is well-aligned with the requirements in the provided Job Description.
-
---- JOB DETAILS ---
-Source Platform: ${platform}
-Recipient Email: ${email}
-Job Description/Post Details:
-"""
-${jd}
-"""
-
---- INSTRUCTIONS ---
-1.  **Tone:** Formal, enthusiastic, and confident.
-2.  **Length:** Keep the email brief, ideally 3-4 short paragraphs maximum.
-2.1. most of the time keep the humanize way and also try to wish as hi , hello like not robotic 
-3.  **Content:**
-    * Start by explicitly mentioning where the post was seen (e.g., "I saw your post on ${platform}").
-    * State the candidate's strong interest and high alignment with the job's core requirements, explicitly mentioning their **${CANDIDATE_EXPERIENCE} of professional experience**.
-    * Briefly mention the key skills or technologies that match the JD (infer the most relevant skills from the JD).
-    * **Crucial Closing Format:** The email must end with the following exact closing signature (including all line breaks):
-        """
-        ${EMAIL_CLOSING}
-        """
-4.  **Formatting:** Provide only the subject line and the body of the email. Do NOT include any extra conversational text or markdown headings in your final output, as the user will copy it directly into an email.
-5.  **Subject Line:** Must be professional, clear, and include the job title (if inferable) or primary technology include the location in the subject.
-`;
-
-            document.getElementById('generatedPrompt').value = prompt;
-            document.getElementById('generatedPromptContainer').classList.remove('hidden');
-        }
-
-        function copyPrompt() {
-            const promptTextarea = document.getElementById('generatedPrompt');
-            promptTextarea.select();
-            promptTextarea.setSelectionRange(0, 99999); // For mobile devices
-
-            try {
-                // Use the older, more reliable method for iframes
-                const successful = document.execCommand('copy');
-                const copyButton = document.getElementById('copyButton');
-                if (successful) {
-                    copyButton.textContent = 'Copied!';
-                    copyButton.classList.add('bg-green-600', 'hover:bg-green-700');
-                    setTimeout(() => {
-                        copyButton.textContent = 'Copy Prompt';
-                        copyButton.classList.remove('bg-green-600', 'hover:bg-green-700');
-                    }, 2000);
-                }
-            } catch (err) {
-                console.error('Copy failed: ', err);
-            }
-        }
-    </script>
-
-    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-xl p-6 lg:p-10">
-        <h1 class="text-3xl font-extrabold text-indigo-700 mb-2 border-b-2 border-indigo-100 pb-2">
-            AI Email Prompt Generator
-        </h1>
-        <p class="text-gray-600 mb-6">
-            Generate a high-quality prompt for an AI model to write a targeted C2C application email.
+<body>
+<div class="container">
+    <div class="form-panel">
+        <h2>Work Experience · Reverse Chronology</h2>
+        <p style="font-size:0.85rem;color:#475569;margin-top:0.3rem;">
+            <strong>Case 1:</strong> total experience ≤ 5 yrs → 3 clients (Pre-US → State → Latest)<br>
+            <strong>Case 2:</strong> total experience &gt; 5 yrs → 4 clients (Pre-US → Retail → State → Latest)
         </p>
-
-        <!-- Candidate Details Card -->
-        <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-lg mb-8">
-            <h2 class="text-lg font-semibold text-indigo-800 mb-2">Candidate Details (Final View)</h2>
-            <div class="flex flex-col sm:flex-row sm:space-x-8 text-sm text-gray-700">
-                <p><strong>Name:</strong> <span id="candidateName" class="font-medium"></span></p>
-                <p><strong>Email:</strong> <span id="candidateEmail" class="font-medium"></span></p>
-                <p><strong>Phone:</strong> <span id="candidatePhone" class="font-medium"></span></p>
-                <p><strong>Experience:</strong> <span id="candidateExperience" class="font-medium"></span></p>
+        <div class="grid-2">
+            <div class="field"><label>First name</label><input type="text" id="firstName" placeholder="John"></div>
+            <div class="field"><label>Last name</label><input type="text" id="lastName" placeholder="Doe"></div>
+            <div class="field"><label>Email</label><input type="email" id="email" placeholder="john@example.com"></div>
+            <div class="field"><label>Phone</label><input type="tel" id="phone" placeholder="+1 234 567 8900"></div>
+            <div class="field">
+                <label>DOB</label>
+                <div class="date-row" data-date="dob">
+                    <select id="dobYear" aria-label="DOB year"></select>
+                    <select id="dobMonth" aria-label="DOB month"></select>
+                    <select id="dobDay" aria-label="DOB day"></select>
+                </div>
+            </div>
+            <div class="field">
+                <label>First USA arrival</label>
+                <div class="date-row" data-date="arrivalUsa">
+                    <select id="arrivalUsaYear" aria-label="First USA arrival year"></select>
+                    <select id="arrivalUsaMonth" aria-label="First USA arrival month"></select>
+                    <select id="arrivalUsaDay" aria-label="First USA arrival day"></select>
+                </div>
+            </div>
+            <div class="field">
+                <label>First Semester Start</label>
+                <div class="date-row" data-date="firstSemStart">
+                    <select id="firstSemStartYear" aria-label="First Semester Start year"></select>
+                    <select id="firstSemStartMonth" aria-label="First Semester Start month"></select>
+                    <select id="firstSemStartDay" aria-label="First Semester Start day"></select>
+                </div>
+            </div>
+            <div class="field">
+                <label>OPT Start Date</label>
+                <div class="date-row" data-date="optStart">
+                    <select id="optStartYear" aria-label="OPT Start Date year"></select>
+                    <select id="optStartMonth" aria-label="OPT Start Date month"></select>
+                    <select id="optStartDay" aria-label="OPT Start Date day"></select>
+                </div>
+            </div>
+            <div class="field"><label>Highest Degree</label><select id="degree"><option value="B.Tech">B.Tech</option><option value="Masters" selected>Masters</option></select></div>
+            <div class="field"><label>University</label><input type="text" id="university" placeholder="e.g., Stanford"></div>
+            <div class="field">
+                <label>Technology Domain (Latest Client Role)</label>
+                <select id="techDomain">
+                    <option value="">Loading domains...</option>
+                </select>
+                <div id="customRoleDiv" style="display:none; margin-top:8px;">
+                    <input type="text" id="customRole" placeholder="Enter custom job title" style="width:100%;">
+                </div>
             </div>
         </div>
-
-        <div class="space-y-6">
-            <!-- 1. Job Description Field -->
-            <div>
-                <label for="jobDescription" class="block text-sm font-medium text-gray-700 mb-2">
-                    1. Paste Job Description (JD) or Post Details <span class="text-red-500">*</span>
-                </label>
-                <textarea id="jobDescription" rows="8" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="Paste the full job post, requirements, and responsibilities here..."></textarea>
-            </div>
-
-            <!-- 2. Platform Picklist/Input -->
-            <div>
-                <label for="platformInput" class="block text-sm font-medium text-gray-700 mb-2">
-                    2. Type or Select Source Platform (e.g., LinkedIn, Dice, Denken Solutions)
-                </label>
-                <input
-                    type="text"
-                    id="platformInput"
-                    list="platformDatalist"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                    placeholder="E.g., LinkedIn Post, LinkedIn Jobs, PurpleDrive..."
-                >
-                <datalist id="platformDatalist"></datalist>
-            </div>
-
-            <!-- 3. Recipient Email Field -->
-            <div>
-                <label for="recipientEmail" class="block text-sm font-medium text-gray-700 mb-2">
-                    3. Recipient Email Address (e.g., recruiter@company.com)
-                </label>
-                <input
-                    type="email"
-                    id="recipientEmail"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-                    placeholder="Optional: Enter the email you are sending this to."
-                >
-            </div>
-
-            <!-- Generate Button -->
-            <button
-                onclick="generatePrompt()"
-                class="w-full py-3 px-4 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-200 transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50"
-            >
-                Generate LLM Prompt
-            </button>
-        </div>
-
-        <!-- Generated Prompt Output -->
-        <div id="generatedPromptContainer" class="mt-8 pt-6 border-t border-gray-200 hidden">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">
-                Generated Prompt for AI Model
-            </h2>
-            <p class="text-sm text-gray-600 mb-3">
-                Copy the text below and paste it into a large language model (like Gemini) to instantly generate your professional email draft.
-            </p>
-
-            <div class="relative">
-                <textarea id="generatedPrompt" readonly rows="12" class="w-full p-4 border-2 border-indigo-300 bg-gray-50 rounded-lg font-mono text-xs focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-
-                <button
-                    id="copyButton"
-                    onclick="copyPrompt()"
-                    class="absolute top-2 right-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-md shadow-lg hover:bg-indigo-700 transition duration-150"
-                >
-                    Copy Prompt
-                </button>
-            </div>
-        </div>
+        <button id="generateBtn" disabled>Generate Profile</button>
     </div>
+    <div class="results" id="resultsArea">
+        <div style="text-align:center; color:#6c757d; padding:2rem;">Fill in all date fields and click Generate.</div>
+    </div>
+    <footer>Rules from rules.txt · Case 1 (≤5 yrs): 3 clients · Case 2 (&gt;5 yrs): 4 clients</footer>
+</div>
+
+<script>
+// Company/client lists — edit clients.json then regenerate this file
+window.__MARKETING_DATA__ = window.__MARKETING_DATA__ || {};
+window.__MARKETING_DATA__.clients = {
+  "Technology": [
+    "Lockheed Martin",
+    "Northrop Grumman",
+    "Raytheon Technologies",
+    "Boeing",
+    "General Dynamics",
+    "BAE Systems Inc.",
+    "L3Harris Technologies",
+    "Leidos",
+    "CACI International",
+    "SAIC",
+    "Booz Allen Hamilton",
+    "Science Applications International Corp",
+    "Huntington Ingalls Industries",
+    "Aerojet Rocketdyne",
+    "Spirit AeroSystems",
+    "Sierra Nevada Corporation",
+    "Ball Aerospace",
+    "Teledyne Technologies",
+    "Maxar Technologies",
+    "ViaSat",
+    "Littelfuse",
+    "Rogers Corporation",
+    "Power Integrations",
+    "MACOM Technology Solutions",
+    "MKS Instruments",
+    "Teradyne",
+    "Cohu",
+    "FormFactor",
+    "Veeco Instruments",
+    "Ultra Clean Technology",
+    "Entegris",
+    "Brooks Automation",
+    "Rudolph Technologies",
+    "Nanometrics",
+    "Onto Innovation",
+    "Photronics",
+    "Diodes Incorporated",
+    "MaxLinear",
+    "Semtech",
+    "Silicon Laboratories",
+    "Cirrus Logic",
+    "Skyworks Solutions",
+    "Qorvo",
+    "Lumentum",
+    "II-VI Incorporated",
+    "Coherent",
+    "IPG Photonics",
+    "MTS Systems",
+    "Hubbell Incorporated"
+  ],
+  "Financial Services": [
+    "Charles Schwab",
+    "Fidelity Investments",
+    "Vanguard Group",
+    "State Street",
+    "PNC Financial Services",
+    "U.S. Bancorp",
+    "Truist Financial",
+    "Capital One",
+    "American Express",
+    "Discover Financial",
+    "Prudential Financial",
+    "MetLife",
+    "AIG",
+    "Allstate",
+    "State Farm Insurance",
+    "Progressive Corporation",
+    "Travelers Companies",
+    "Chubb Limited",
+    "USAA",
+    "Lincoln National",
+    "Principal Financial Group",
+    "Aflac",
+    "Hartford Financial Services",
+    "Nationwide Mutual",
+    "New York Life Insurance",
+    "Northwestern Mutual",
+    "MassMutual",
+    "Raymond James",
+    "LPL Financial",
+    "Edward Jones",
+    "Ameriprise Financial",
+    "Northern Trust",
+    "BNY Mellon",
+    "First Republic Bank",
+    "Citizens Financial Group",
+    "Fifth Third Bank",
+    "Regions Financial",
+    "KeyBank",
+    "Huntington Bancshares",
+    "Comerica",
+    "Zions Bancorporation",
+    "Synovus",
+    "BOK Financial",
+    "Cullen/Frost Bankers",
+    "Commerce Bancshares",
+    "UMB Financial",
+    "Wintrust Financial",
+    "Associated Banc-Corp",
+    "Bank OZK",
+    "Webster Financial"
+  ],
+  "Healthcare & Life Sciences": [
+    "HCA Healthcare",
+    "Tenet Healthcare",
+    "Community Health Systems",
+    "Mayo Clinic",
+    "Cleveland Clinic",
+    "Johns Hopkins Medicine",
+    "Kaiser Permanente",
+    "Ascension",
+    "Trinity Health",
+    "CommonSpirit Health",
+    "Sutter Health",
+    "Providence Health & Services",
+    "Intermountain Healthcare",
+    "Banner Health",
+    "Northwell Health",
+    "Mount Sinai Health System",
+    "NYU Langone Health",
+    "Memorial Sloan Kettering",
+    "MD Anderson Cancer Center",
+    "Stanford Health Care",
+    "UCSF Health",
+    "UPMC",
+    "Mercy Health",
+    "AdventHealth",
+    "Scripps Health",
+    "PeaceHealth",
+    "Geisinger Health System",
+    "Spectrum Health",
+    "Sanford Health",
+    "Henry Ford Health",
+    "Houston Methodist",
+    "Ochsner Health",
+    "Christus Health",
+    "Baylor Scott & White Health",
+    "Texas Health Resources",
+    "Novant Health",
+    "Atrium Health",
+    "Emory Healthcare",
+    "University Hospitals",
+    "Rush University Medical Center",
+    "Montefiore Health System",
+    "Children's Hospital of Philadelphia",
+    "Boston Children's Hospital",
+    "St. Jude Children's Research Hospital",
+    "Fred Hutchinson Cancer Center",
+    "Dana-Farber Cancer Institute",
+    "Piedmont Healthcare",
+    "UnityPoint Health",
+    "Essentia Health",
+    "Centura Health"
+  ],
+  "Retail & E-commerce": [
+    "Walmart",
+    "Target",
+    "Costco",
+    "The Home Depot",
+    "Lowe's",
+    "Best Buy",
+    "Macy's",
+    "Kohl's",
+    "Nordstrom",
+    "JCPenney",
+    "Dillard's",
+    "TJX Companies",
+    "Ross Stores",
+    "Burlington",
+    "Gap Inc.",
+    "Old Navy",
+    "Victoria's Secret",
+    "Bath & Body Works",
+    "Dick's Sporting Goods",
+    "REI",
+    "H-E-B",
+    "Kroger",
+    "Albertsons",
+    "Publix",
+    "Wegmans",
+    "Ahold Delhaize",
+    "Meijer",
+    "Hy-Vee",
+    "WinCo Foods",
+    "Whole Foods Market",
+    "Trader Joe's",
+    "Aldi",
+    "Dollar General",
+    "Dollar Tree",
+    "Family Dollar",
+    "Five Below",
+    "GameStop",
+    "Ulta Beauty",
+    "Menards",
+    "Tractor Supply Company",
+    "Big Lots",
+    "Academy Sports + Outdoors",
+    "Cabela's",
+    "Bass Pro Shops",
+    "Bed Bath & Beyond",
+    "Conn's HomePlus",
+    "Discount Tire",
+    "Penske Automotive Group",
+    "AutoNation",
+    "CarMax"
+  ],
+  "Manufacturing & Automotive": [
+    "Ford Motor Company",
+    "General Motors",
+    "Stellantis",
+    "Toyota Motor North America",
+    "Honda North America",
+    "Nissan USA",
+    "BMW US",
+    "Mercedes-Benz US",
+    "Volkswagen Group of America",
+    "Cummins",
+    "PACCAR",
+    "Navistar",
+    "Oshkosh Corporation",
+    "CNH Industrial",
+    "AGCO",
+    "Caterpillar Inc.",
+    "John Deere",
+    "3M Company",
+    "Honeywell International",
+    "General Electric",
+    "Whirlpool Corporation",
+    "Stanley Black & Decker",
+    "Illinois Tool Works",
+    "Parker Hannifin",
+    "Emerson Electric",
+    "Rockwell Automation",
+    "Eaton Corporation",
+    "Johnson Controls",
+    "Carrier Global",
+    "Otis Worldwide",
+    "Trane Technologies",
+    "Dover Corporation",
+    "Flowserve",
+    "IDEX Corporation",
+    "Graco",
+    "Nordson",
+    "Lincoln Electric",
+    "Snap-on Incorporated",
+    "Timken Company",
+    "Regal Rexnord",
+    "Briggs & Stratton",
+    "Harley-Davidson",
+    "Polaris Inc.",
+    "Textron",
+    "Oshkosh Defense",
+    "AM General",
+    "Pierce Manufacturing",
+    "Collins Aerospace",
+    "Pratt & Whitney",
+    "GE Aviation"
+  ],
+  "Nonprofits & Foundations": [
+    "The Bill & Melinda Gates Foundation",
+    "The Ford Foundation",
+    "The Rockefeller Foundation",
+    "W.K. Kellogg Foundation",
+    "The Andrew W. Mellon Foundation",
+    "Lilly Endowment",
+    "Robert Wood Johnson Foundation",
+    "The David and Lucile Packard Foundation",
+    "The Walton Family Foundation",
+    "The Michael & Susan Dell Foundation",
+    "The JPB Foundation",
+    "The Kresge Foundation",
+    "The John D. and Catherine T. MacArthur Foundation",
+    "The Annie E. Casey Foundation",
+    "The Pew Charitable Trusts",
+    "United Way Worldwide",
+    "American Red Cross",
+    "The Salvation Army",
+    "Feeding America",
+    "Goodwill Industries",
+    "Habitat for Humanity International",
+    "The Nature Conservancy",
+    "World Wildlife Fund",
+    "Environmental Defense Fund",
+    "Catholic Charities USA",
+    "Lutheran Services in America",
+    "Boys & Girls Clubs of America",
+    "YMCA of the USA",
+    "Girl Scouts of the USA",
+    "Boy Scouts of America",
+    "St. Jude Children's Research Hospital",
+    "Shriners Hospitals for Children",
+    "American Heart Association",
+    "American Cancer Society",
+    "American Diabetes Association",
+    "Alzheimer's Association",
+    "Susan G. Komen Foundation",
+    "March of Dimes",
+    "Save the Children",
+    "International Rescue Committee",
+    "CARE USA",
+    "Oxfam America",
+    "Doctors Without Borders USA",
+    "The Carter Center",
+    "Clinton Foundation",
+    "Open Society Foundations",
+    "Bloomberg Family Foundation",
+    "The Howard G. Buffett Foundation",
+    "The Leona M. and Harry B. Helmsley Charitable Trust",
+    "The McKnight Foundation"
+  ],
+  "State_Clients_High_Contract_Volume": [
+    "State of California",
+    "State of Texas",
+    "State of New York",
+    "State of Florida",
+    "State of Illinois",
+    "State of Pennsylvania",
+    "State of Ohio",
+    "State of New Jersey",
+    "State of Virginia",
+    "State of North Carolina",
+    "State of Georgia",
+    "State of Washington",
+    "State of Massachusetts",
+    "State of Michigan",
+    "State of Maryland",
+    "State of Arizona",
+    "State of Colorado",
+    "State of Minnesota",
+    "State of Wisconsin",
+    "State of Tennessee",
+    "State of Indiana",
+    "State of Missouri",
+    "State of Connecticut",
+    "State of Oregon",
+    "State of South Carolina",
+    "State of Alabama",
+    "State of Louisiana",
+    "State of Kentucky",
+    "State of Oklahoma",
+    "State of Utah"
+  ]
+};
+</script>
+<script>
+// Role domains and titles — edit this file directly to add or remove roles.
+window.__MARKETING_DATA__ = window.__MARKETING_DATA__ || {};
+window.__MARKETING_DATA__.roles = {
+  "categories": [
+    {
+      "name": "Core Software Engineering",
+      "levels": [
+        {
+          "level": 1,
+          "roles": [
+            "Associate Software Engineer",
+            "Software Engineer I",
+            "Junior Developer"
+          ]
+        },
+        {
+          "level": 2,
+          "roles": [
+            "Software Engineer",
+            "Software Developer",
+            "Software Engineer II",
+            "Application Software Engineer",
+            "Product Software Engineer"
+          ]
+        },
+        {
+          "level": 3,
+          "roles": [
+            "Senior Software Engineer",
+            "Senior Software Developer",
+            "Software Engineer III",
+            "Senior Application Engineer",
+            "Senior Product Engineer"
+          ]
+        },
+        {
+          "level": 4,
+          "roles": [
+            "Lead Software Engineer",
+            "Software Architect",
+            "Software Engineer IV"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "AI + Data Intelligence",
+      "levels": [
+        {
+          "level": 1,
+          "roles": [
+            "Associate Data Analyst",
+            "Associate Data Engineer",
+            "Data Quality Analyst",
+            "Reporting Analyst",
+            "BI Analyst",
+            "SQL Data Analyst"
+          ]
+        },
+        {
+          "level": 2,
+          "roles": [
+            "Data Engineer",
+            "Data Scientist",
+            "Machine Learning Engineer",
+            "AI Engineer",
+            "Analytics Engineer",
+            "Business Intelligence Engineer",
+            "LLM Application Engineer",
+            "Agentic AI Engineer"
+          ]
+        },
+        {
+          "level": 3,
+          "roles": [
+            "Senior Data Engineer",
+            "Senior Data Scientist",
+            "Senior Machine Learning Engineer",
+            "Senior AI Engineer",
+            "Applied AI Engineer",
+            "LLM Engineer",
+            "Generative AI Engineer",
+            "AI Systems Engineer",
+            "Data Platform Engineer"
+          ]
+        },
+        {
+          "level": 4,
+          "roles": [
+            "Lead Machine Learning Engineer",
+            "Lead AI Engineer",
+            "Lead Data Engineer",
+            "Lead Data Scientist",
+            "Applied Scientist",
+            "Lead Generative AI Engineer",
+            "Agentic AI Systems Engineer",
+            "Data Platform Architect",
+            "AI Platform Architect"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SAP / Enterprise Systems",
+      "levels": [
+        {
+          "level": 1,
+          "roles": [
+            "Associate SAP Consultant",
+            "SAP Support Analyst",
+            "Associate SAP ABAP Developer",
+            "SAP Functional Analyst",
+            "SAP Business Analyst",
+            "SAP Data Analyst"
+          ]
+        },
+        {
+          "level": 2,
+          "roles": [
+            "SAP Consultant",
+            "SAP Functional Consultant",
+            "SAP ABAP Developer",
+            "SAP BW Consultant",
+            "SAP HANA Developer",
+            "SAP Technical Consultant"
+          ]
+        },
+        {
+          "level": 3,
+          "roles": [
+            "Senior SAP Consultant",
+            "Senior SAP Functional Consultant",
+            "Senior SAP ABAP Developer",
+            "Senior SAP BW Consultant",
+            "SAP S/4HANA Consultant",
+            "SAP Integration Consultant"
+          ]
+        },
+        {
+          "level": 4,
+          "roles": [
+            "Lead SAP Consultant",
+            "Lead SAP Functional Consultant",
+            "Lead SAP ABAP Developer",
+            "SAP BW Architect",
+            "SAP S/4HANA Architect",
+            "Lead SAP Technical Consultant"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cybersecurity",
+      "levels": [
+        {
+          "level": 1,
+          "roles": [
+            "Associate Security Analyst",
+            "SOC Analyst L1",
+            "Associate Cybersecurity Engineer",
+            "Security Operations Analyst",
+            "Vulnerability Analyst",
+            "IAM Analyst"
+          ]
+        },
+        {
+          "level": 2,
+          "roles": [
+            "Security Engineer",
+            "SOC Analyst L2",
+            "Cybersecurity Analyst",
+            "Incident Response Analyst",
+            "Cloud Security Engineer",
+            "Application Security Engineer"
+          ]
+        },
+        {
+          "level": 3,
+          "roles": [
+            "Senior Security Engineer",
+            "Senior SOC Analyst",
+            "Application Security Engineer",
+            "Threat Intelligence Analyst",
+            "Cloud Security Engineer",
+            "Security Automation Engineer"
+          ]
+        },
+        {
+          "level": 4,
+          "roles": [
+            "Lead Security Engineer",
+            "Lead SOC Analyst",
+            "Application Security Architect",
+            "Cloud Security Architect",
+            "Lead Security Operations Engineer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytics & Business",
+      "levels": [
+        {
+          "level": 1,
+          "roles": [
+            "Associate Data Analyst",
+            "Associate Business Analyst",
+            "Associate BI Analyst",
+            "Reporting Analyst",
+            "SQL Analyst",
+            "Operations Analyst"
+          ]
+        },
+        {
+          "level": 2,
+          "roles": [
+            "Data Analyst",
+            "Business Analyst",
+            "BI Analyst",
+            "Product Analyst",
+            "Operations Analyst",
+            "Marketing Analyst"
+          ]
+        },
+        {
+          "level": 3,
+          "roles": [
+            "Senior Data Analyst",
+            "Senior Business Analyst",
+            "Senior BI Analyst",
+            "Senior Product Analyst",
+            "Strategy Analyst",
+            "Growth Analyst"
+          ]
+        },
+        {
+          "level": 4,
+          "roles": [
+            "Lead Data Analyst",
+            "Lead Business Analyst",
+            "Lead BI Analyst",
+            "Lead Product Analyst",
+            "Strategy Consultant",
+            "Growth Lead"
+          ]
+        }
+      ]
+    }
+  ]
+};
+</script>
+<script>
+// Business rules from rules.txt
+window.__MARKETING_DATA__ = window.__MARKETING_DATA__ || {};
+window.__MARKETING_DATA__.rules = {
+  START_WORK_BY_DOB: {
+    "<=1997": { year: 2017, month: 5, day: 1 },
+    "1998": { year: 2017, month: 5, day: 1 },
+    "1999": { year: 2018, month: 5, day: 1 },
+    "2000": { year: 2019, month: 5, day: 1 },
+    "2001": { year: 2020, month: 5, day: 1 },
+    "2002": { year: 2021, month: 5, day: 1 },
+    "default": { year: 2022, month: 5, day: 1 }
+  },
+  CASE_SELECTION: {
+    CASE_1_MAX_YEARS: 5,
+    CASE_2_MIN_YEARS: 5
+  },
+  GAPS: {
+    PRE_US_TO_STATE_MONTHS: 3,
+    STATE_TO_LATEST_DAYS: 1
+  },
+  MIN_CLIENT_MONTHS: 8,
+  STATE_DURATION_MONTHS: { min: 14, max: 18 },
+  PRE_US_SPLIT_THRESHOLD_YEARS: 1.8,
+  CASE_1: {
+    CLIENT_A: {
+      role: "Latest Client",
+      weights: {
+        "Healthcare & Life Sciences": 60,
+        "Financial Services": 30,
+        "Technology": 5
+      }
+    },
+    CLIENT_B: {
+      role: "State Client",
+      category: "State_Clients_High_Contract_Volume"
+    },
+    CLIENT_C: {
+      role: "Pre-US Client",
+      category: "Manufacturing & Automotive"
+    }
+  },
+  CASE_2: {
+    CLIENT_A: {
+      role: "Latest Client",
+      weights: {
+        "Healthcare & Life Sciences": 45,
+        "Financial Services": 40,
+        "Nonprofits & Foundations": 10,
+        "Technology": 5
+      }
+    },
+    CLIENT_B: {
+      role: "State Client",
+      category: "State_Clients_High_Contract_Volume"
+    },
+    CLIENT_C: {
+      role: "Third Client",
+      category: "Retail & E-commerce"
+    },
+    CLIENT_D: {
+      role: "Fourth Client",
+      category: "Manufacturing & Automotive"
+    }
+  }
+};
+</script>
+<script>
+    var COMPANY_DB = null;
+    var ROLE_CATEGORIES = [];
+    var RULES = null;
+    var STATE_CLIENTS_KEY = "State_Clients_High_Contract_Volume";
+    var dataReady = false;
+    var MIN_CLIENT_YEARS = 8 / 12;
+
+    function populateTechDomainSelect() {
+        var select = document.getElementById('techDomain');
+        select.innerHTML = '';
+        for (var i = 0; i < ROLE_CATEGORIES.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = ROLE_CATEGORIES[i].name;
+            opt.textContent = ROLE_CATEGORIES[i].name;
+            if (i === 1) opt.selected = true;
+            select.appendChild(opt);
+        }
+        var otherOpt = document.createElement('option');
+        otherOpt.value = 'other';
+        otherOpt.textContent = 'Other (Custom Role)';
+        select.appendChild(otherOpt);
+    }
+
+    function normalizeCompany(entry) {
+        if (entry && typeof entry === 'object' && entry.name) {
+            return { name: entry.name, linkedin: entry.linkedin || null };
+        }
+        if (typeof entry === 'string') return { name: entry, linkedin: null };
+        return { name: 'Unknown Client', linkedin: null };
+    }
+
+    function formatCompanyHtml(company, linkedin) {
+        if (linkedin) {
+            return '<a href="' + linkedin + '" target="_blank" rel="noopener noreferrer">' + company + '</a>';
+        }
+        return company;
+    }
+
+    function pickStateClient() {
+        var list = COMPANY_DB[STATE_CLIENTS_KEY];
+        if (!list || !list.length) return { name: 'State Client', linkedin: null };
+        return normalizeCompany(randomItem(list));
+    }
+
+    function pickCompany(industry) {
+        var list = COMPANY_DB[industry];
+        if (!list || !list.length) return { name: industry + ' Client', linkedin: null };
+        return normalizeCompany(randomItem(list));
+    }
+
+    function pickCompanyFromCategory(category) {
+        return { industry: category, company: pickCompany(category) };
+    }
+
+    function pickWeightedClientCompany(weights) {
+        var industry = weightedPick(weights);
+        return { industry: industry, company: pickCompany(industry) };
+    }
+
+    function pickClientByRule(clientRule) {
+        if (clientRule.weights) return pickWeightedClientCompany(clientRule.weights);
+        if (clientRule.category === STATE_CLIENTS_KEY) {
+            return { industry: "State & Government", company: pickStateClient() };
+        }
+        return pickCompanyFromCategory(clientRule.category);
+    }
+
+    function applyLoadedData(clientsData, rolesData) {
+        COMPANY_DB = clientsData;
+        ROLE_CATEGORIES = (rolesData && rolesData.categories) ? rolesData.categories : [];
+        RULES = (window.__MARKETING_DATA__ && window.__MARKETING_DATA__.rules) ? window.__MARKETING_DATA__.rules : null;
+        if (!RULES) throw new Error('rules.js missing or invalid');
+        if (!COMPANY_DB[STATE_CLIENTS_KEY] || !COMPANY_DB[STATE_CLIENTS_KEY].length) {
+            throw new Error('State_Clients_High_Contract_Volume missing in clients.js');
+        }
+        MIN_CLIENT_YEARS = (RULES.MIN_CLIENT_MONTHS || 8) / 12;
+        populateTechDomainSelect();
+        dataReady = true;
+        document.getElementById('generateBtn').disabled = false;
+    }
+
+    function initData() {
+        var data = window.__MARKETING_DATA__;
+        if (!data || !data.clients || !data.roles || !data.rules) {
+            showDataError('Embedded data failed to initialize.');
+            return;
+        }
+        try {
+            applyLoadedData(data.clients, data.roles);
+        } catch (err) {
+            showDataError(err.message);
+        }
+    }
+
+    function showDataError(message) {
+        document.getElementById('resultsArea').innerHTML =
+            '<div class="error-box">Could not load data files: ' + message + '</div>';
+    }
+
+    var MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+    function daysInMonth(year, month) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    function populateYearSelect(selectEl, minYear, maxYear, selectedYear) {
+        selectEl.innerHTML = '<option value="">Year</option>';
+        for (var y = maxYear; y >= minYear; y--) {
+            var opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === selectedYear) opt.selected = true;
+            selectEl.appendChild(opt);
+        }
+    }
+
+    function populateMonthSelect(selectEl, selectedMonth) {
+        selectEl.innerHTML = '<option value="">Month</option>';
+        for (var m = 1; m <= 12; m++) {
+            var opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = MONTH_NAMES[m - 1];
+            if (m === selectedMonth) opt.selected = true;
+            selectEl.appendChild(opt);
+        }
+    }
+
+    function populateDaySelect(selectEl, year, month, selectedDay) {
+        selectEl.innerHTML = '<option value="">Day</option>';
+        if (!year || !month) return;
+        var maxDay = daysInMonth(year, month);
+        if (selectedDay > maxDay) selectedDay = maxDay;
+        for (var d = 1; d <= maxDay; d++) {
+            var opt = document.createElement('option');
+            opt.value = d;
+            opt.textContent = d;
+            if (d === selectedDay) opt.selected = true;
+            selectEl.appendChild(opt);
+        }
+    }
+
+    function initDatePicker(prefix, minYear, maxYear, defaultDate) {
+        var yearEl = document.getElementById(prefix + 'Year');
+        var monthEl = document.getElementById(prefix + 'Month');
+        var dayEl = document.getElementById(prefix + 'Day');
+        var defaultYear = defaultDate.getFullYear();
+        var defaultMonth = defaultDate.getMonth() + 1;
+        var defaultDay = defaultDate.getDate();
+
+        populateYearSelect(yearEl, minYear, maxYear, defaultYear);
+        populateMonthSelect(monthEl, defaultMonth);
+        populateDaySelect(dayEl, defaultYear, defaultMonth, defaultDay);
+
+        function refreshDays() {
+            var y = parseInt(yearEl.value, 10);
+            var m = parseInt(monthEl.value, 10);
+            var currentDay = parseInt(dayEl.value, 10) || defaultDay;
+            populateDaySelect(dayEl, y, m, currentDay);
+        }
+
+        yearEl.addEventListener('change', refreshDays);
+        monthEl.addEventListener('change', refreshDays);
+    }
+
+    function getDateFromPicker(prefix) {
+        var year = parseInt(document.getElementById(prefix + 'Year').value, 10);
+        var month = parseInt(document.getElementById(prefix + 'Month').value, 10);
+        var day = parseInt(document.getElementById(prefix + 'Day').value, 10);
+        if (!year || !month || !day) return null;
+        return new Date(year, month - 1, day);
+    }
+
+    function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function weightedPick(wm) {
+        var e = Object.entries(wm), t = e.reduce(function(s,x){return s+x[1];},0), r = Math.random()*t, a = 0;
+        for (var i = 0; i < e.length; i++) { a += e[i][1]; if (r <= a) return e[i][0]; }
+        return e[0][0];
+    }
+    function diffYears(d1, d2) { return (d2 - d1) / (1000 * 3600 * 24 * 365.25); }
+    function diffMonths(d1, d2) {
+        return (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+    }
+    function addMonths(date, m) { var d = new Date(date); d.setMonth(d.getMonth() + m); return d; }
+    function addDays(date, days) { var d = new Date(date); d.setDate(d.getDate() + days); return d; }
+    function toMonths(years) { return Math.max(0, Math.round(years * 12)); }
+    function formatDurationFromMonths(totalMonths) {
+        totalMonths = Math.max(0, Math.round(totalMonths));
+        var yrs = Math.floor(totalMonths / 12);
+        var mos = totalMonths % 12;
+        if (yrs === 0) return mos + " month" + (mos !== 1 ? 's' : '');
+        if (mos === 0) return yrs + " yr" + (yrs !== 1 ? 's' : '');
+        return yrs + " yr" + (yrs !== 1 ? 's' : '') + " " + mos + " month" + (mos !== 1 ? 's' : '');
+    }
+    function formatDuration(y) {
+        return formatDurationFromMonths(y * 12);
+    }
+    function avoidRoundYears(months, minMonths) {
+        minMonths = minMonths || RULES.MIN_CLIENT_MONTHS;
+        months = Math.max(minMonths, Math.round(months));
+        if (months >= 12 && months % 12 === 0) {
+            var bump = 1 + Math.floor(Math.random() * 3);
+            months += Math.random() < 0.5 ? -bump : bump;
+            months = Math.max(minMonths, months);
+        }
+        return months;
+    }
+    function varyMonths(base, spread) {
+        spread = spread || 2;
+        var delta = Math.floor(Math.random() * (spread * 2 + 1)) - spread;
+        return avoidRoundYears(base + delta, RULES.MIN_CLIENT_MONTHS);
+    }
+    function softenDate(date, maxDays) {
+        maxDays = maxDays || 24;
+        return addDays(date, -(4 + Math.floor(Math.random() * maxDays)));
+    }
+    function addNaturalDays(date) {
+        return addDays(date, 3 + Math.floor(Math.random() * 24));
+    }
+    function formatDate(d) { return d.toLocaleString('default', { month: 'short', year: 'numeric' }); }
+    function getRoleFromDomain(name, lvl, custom) {
+        if (name === "other") return custom || "Custom Technology Consultant";
+        var cat = ROLE_CATEGORIES.find(function(c){ return c.name === name; });
+        if (!cat) return name + " Specialist";
+        var lo = cat.levels.find(function(l){ return l.level === lvl; });
+        if (!lo) return name + " Level " + lvl;
+        return lo.roles[Math.floor(Math.random() * lo.roles.length)];
+    }
+
+    function buildClientRoleMap(domainSelect, customRole, workCase) {
+        var levels = workCase === 1
+            ? { A: 3, B: 2, C: 1 }
+            : { A: 4, B: 3, C: 2, D: 1 };
+        var keys = workCase === 1 ? ["A", "B", "C"] : ["A", "B", "C", "D"];
+        var map = {};
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            map[key] = {
+                level: levels[key],
+                title: getRoleFromDomain(domainSelect, levels[key], customRole)
+            };
+        }
+        return map;
+    }
+    function getStartWorkDate(dobYear) {
+        var table = RULES.START_WORK_BY_DOB;
+        var key = dobYear <= 1997 ? "<=1997" : String(dobYear);
+        var entry = table[key] || table.default;
+        return new Date(entry.year, entry.month, entry.day);
+    }
+
+    function stateDurationMonths() {
+        var minM = RULES.STATE_DURATION_MONTHS.min;
+        var maxM = RULES.STATE_DURATION_MONTHS.max;
+        var m = minM + Math.floor(Math.random() * (maxM - minM + 1));
+        return avoidRoundYears(m, minM);
+    }
+
+    function splitPostUsCase2(postUsaMonths) {
+        var minM = RULES.STATE_DURATION_MONTHS.min;
+        var bMonths = varyMonths(minM + Math.floor(Math.random() * 3), 1);
+        var aMonths = varyMonths(minM + Math.floor(Math.random() * 3), 1);
+        var remaining = postUsaMonths - bMonths - aMonths;
+        var cPost = 0;
+        var dPost = 0;
+        if (remaining > 0) {
+            cPost = avoidRoundYears(Math.max(RULES.MIN_CLIENT_MONTHS, Math.floor(remaining / 3)), RULES.MIN_CLIENT_MONTHS);
+            dPost = avoidRoundYears(Math.max(0, remaining - cPost), 0);
+        } else if (remaining < 0) {
+            aMonths = Math.max(RULES.MIN_CLIENT_MONTHS, avoidRoundYears(postUsaMonths - bMonths, RULES.MIN_CLIENT_MONTHS));
+        }
+        return { bMonths: bMonths, aMonths: aMonths, cPost: cPost, dPost: dPost };
+    }
+
+    function makeClient(label, pick, role, startDate, endDate, type, roleLevel) {
+        var durationMonths = Math.max(0, diffMonths(startDate, endDate));
+        var company = normalizeCompany(pick.company);
+        return {
+            label: label,
+            industry: pick.industry,
+            company: company.name,
+            linkedin: company.linkedin,
+            role: role,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            durationMonths: durationMonths,
+            durationYears: durationMonths / 12,
+            type: type,
+            roleLevel: roleLevel || null
+        };
+    }
+
+    function clientDurationText(client) {
+        return formatDurationFromMonths(client.durationMonths);
+    }
+
+    function validateClientDurations(clients, warnings) {
+        for (var i = 0; i < clients.length; i++) {
+            if (clients[i].durationMonths > 0 && clients[i].durationMonths < RULES.MIN_CLIENT_MONTHS) {
+                warnings.push(clients[i].label + " has only " + clientDurationText(clients[i]) + " (less than 8 months).");
+            }
+        }
+    }
+
+    function buildCase1Clients(startWorkDate, arrivalDate, now, preUsaMonths, roleMap) {
+        var pickA = pickClientByRule(RULES.CASE_1.CLIENT_A);
+        var pickB = pickClientByRule(RULES.CASE_1.CLIENT_B);
+        var pickC = pickClientByRule(RULES.CASE_1.CLIENT_C);
+        var stateMonths = stateDurationMonths();
+
+        var cStart = addNaturalDays(new Date(startWorkDate));
+        var cEnd = softenDate(arrivalDate);
+        if (cEnd <= cStart) cEnd = addMonths(cStart, varyMonths(preUsaMonths, 2));
+        var bStart = addMonths(cEnd, RULES.GAPS.PRE_US_TO_STATE_MONTHS);
+        var bEnd = addNaturalDays(addMonths(bStart, stateMonths));
+        var aStart = addDays(bEnd, RULES.GAPS.STATE_TO_LATEST_DAYS);
+        var aEnd = new Date(now);
+
+        return [
+            makeClient("Pre-US Client (CLIENT_C)", pickC, roleMap.C.title, cStart, cEnd, "early", roleMap.C.level),
+            makeClient("State Client (CLIENT_B)", pickB, roleMap.B.title, bStart, bEnd, "state", roleMap.B.level),
+            makeClient("Latest Client (CLIENT_A)", pickA, roleMap.A.title, aStart, aEnd, "latest", roleMap.A.level)
+        ];
+    }
+
+    function buildCase2Clients(startWorkDate, arrivalDate, now, preUsaMonths, postUsaMonths, roleMap) {
+        var pickA = pickClientByRule(RULES.CASE_2.CLIENT_A);
+        var pickB = pickClientByRule(RULES.CASE_2.CLIENT_B);
+        var pickC = pickClientByRule(RULES.CASE_2.CLIENT_C);
+        var pickD = pickClientByRule(RULES.CASE_2.CLIENT_D);
+        var postSplit = splitPostUsCase2(postUsaMonths);
+        var threshold = toMonths(RULES.PRE_US_SPLIT_THRESHOLD_YEARS);
+
+        var dStart = new Date(startWorkDate);
+        var dEnd, cStart, cEnd;
+
+        if (preUsaMonths <= threshold) {
+            dEnd = softenDate(arrivalDate);
+            var cTotalMonths = varyMonths(Math.max(RULES.MIN_CLIENT_MONTHS, postSplit.cPost || 11), 2);
+            cEnd = softenDate(arrivalDate);
+            cStart = addMonths(cEnd, -cTotalMonths);
+            dStart = addNaturalDays(new Date(startWorkDate));
+            if (cStart < dEnd) dEnd = addDays(cStart, -2 - Math.floor(Math.random() * 12));
+            if (dEnd <= dStart) {
+                dEnd = addMonths(dStart, varyMonths(preUsaMonths, 2));
+            }
+        } else {
+            var dPreMonths = varyMonths(RULES.STATE_DURATION_MONTHS.min, 2);
+            var cPreMonths = avoidRoundYears(preUsaMonths - dPreMonths, RULES.MIN_CLIENT_MONTHS);
+            dPreMonths = Math.max(RULES.MIN_CLIENT_MONTHS, preUsaMonths - cPreMonths);
+            dStart = addNaturalDays(new Date(startWorkDate));
+            dEnd = addNaturalDays(addMonths(dStart, dPreMonths));
+            cStart = addDays(dEnd, 1 + Math.floor(Math.random() * 10));
+            cEnd = softenDate(arrivalDate);
+            if (diffMonths(cStart, cEnd) < RULES.MIN_CLIENT_MONTHS) {
+                cEnd = addMonths(cStart, varyMonths(RULES.MIN_CLIENT_MONTHS + 1, 1));
+            }
+        }
+
+        var bStart = addMonths(cEnd, RULES.GAPS.PRE_US_TO_STATE_MONTHS);
+        var bMonths = stateDurationMonths();
+        var bEnd = addNaturalDays(addMonths(bStart, bMonths));
+        var aStart = addDays(bEnd, RULES.GAPS.STATE_TO_LATEST_DAYS);
+        var aEnd = new Date(now);
+
+        return [
+            makeClient("Pre-US Client (CLIENT_D)", pickD, roleMap.D.title, dStart, dEnd, "early", roleMap.D.level),
+            makeClient("Third Client (CLIENT_C)", pickC, roleMap.C.title, cStart, cEnd, "tertiary", roleMap.C.level),
+            makeClient("State Client (CLIENT_B)", pickB, roleMap.B.title, bStart, bEnd, "state", roleMap.B.level),
+            makeClient("Latest Client (CLIENT_A)", pickA, roleMap.A.title, aStart, aEnd, "latest", roleMap.A.level)
+        ];
+    }
+
+    function generate() {
+        if (!dataReady || !COMPANY_DB) {
+            document.getElementById('resultsArea').innerHTML = '<div class="error-box">Client data is still loading. Please wait and try again.</div>';
+            return;
+        }
+        var firstName = document.getElementById('firstName').value.trim() || "Consultant";
+        var lastName = document.getElementById('lastName').value.trim() || "Expert";
+        var email = document.getElementById('email').value.trim() || "contact@example.com";
+        var phone = document.getElementById('phone').value.trim() || "N/A";
+        var dobDate = getDateFromPicker('dob');
+        var arrivalDate = getDateFromPicker('arrivalUsa');
+        var semStart = getDateFromPicker('firstSemStart');
+        var optStart = getDateFromPicker('optStart');
+        var degree = document.getElementById('degree').value;
+        var university = document.getElementById('university').value.trim() || "Not specified";
+        var domainSelect = document.getElementById('techDomain').value;
+        var customRole = document.getElementById('customRole').value.trim();
+        var now = new Date();
+
+        if (!dobDate || !arrivalDate || !semStart || !optStart) {
+            document.getElementById('resultsArea').innerHTML = '<div class="error-box">Please fill in all date fields (year, month, and day).</div>';
+            return;
+        }
+        if (isNaN(dobDate)||isNaN(arrivalDate)||isNaN(semStart)||isNaN(optStart)) {
+            document.getElementById('resultsArea').innerHTML = '<div class="error-box">Invalid date(s).</div>';
+            return;
+        }
+
+        var dobYear = dobDate.getFullYear();
+        var startWorkDate = getStartWorkDate(dobYear);
+        var postUsaStart = addMonths(semStart, 3);
+
+        var preUsaYears = diffYears(startWorkDate, arrivalDate);
+        var postUsaYears = diffYears(postUsaStart, now);
+        var totalExperienceYears = preUsaYears + postUsaYears;
+        var preUsaMonths = toMonths(preUsaYears);
+        var postUsaMonths = toMonths(postUsaYears);
+
+        // rules.txt: Case 1 if total <= 5 years, Case 2 if total > 5 years
+        var workCase = totalExperienceYears <= RULES.CASE_SELECTION.CASE_1_MAX_YEARS ? 1 : 2;
+
+        var errors = [], warnings = [];
+
+        if (totalExperienceYears <= 0) {
+            errors.push("Total experience must be greater than 0. Adjust your dates.");
+            document.getElementById('resultsArea').innerHTML = '<div class="error-box">' + errors.join('<br>') + '</div>';
+            return;
+        }
+
+        var numClients = workCase === 1 ? 3 : 4;
+        var roleMap = buildClientRoleMap(domainSelect, customRole, workCase);
+        var domainLabel = domainSelect === "other" ? (customRole || "Custom") : domainSelect;
+
+        var clients = workCase === 1
+            ? buildCase1Clients(startWorkDate, arrivalDate, now, preUsaMonths, roleMap)
+            : buildCase2Clients(startWorkDate, arrivalDate, now, preUsaMonths, postUsaMonths, roleMap);
+
+        validateClientDurations(clients, warnings);
+
+        // Reverse for display (latest first)
+        var displayClients = clients.slice().reverse();
+
+        // Recalculate total from allocated durations
+        var allocatedTotal = 0;
+        for (var a = 0; a < clients.length; a++) allocatedTotal += clients[a].durationYears;
+
+        // ===== RENDER =====
+        var html = '';
+
+        // Warnings
+        if (warnings.length > 0) {
+            html += '<div class="warning">';
+            for (var w = 0; w < warnings.length; w++) html += '⚠️ ' + warnings[w] + '<br>';
+            html += '</div>';
+        }
+
+        // Profile card
+        html += '<div class="exp-card">';
+        html += '<div class="flex-between"><h3>' + firstName + ' ' + lastName + '</h3><div><span class="badge">' + degree + (degree==='Masters'?' ⭐':'') + '</span><span class="badge-case">Case ' + workCase + ' · ' + numClients + ' Clients</span></div></div>';
+        html += '<div>' + email + ' &nbsp;&nbsp; ' + phone + '</div>';
+        html += '<div>' + university + '</div>';
+        html += '<hr style="border:none;border-top:1px solid #e2e8f0;margin:0.8rem 0;">';
+
+        // Summary grid
+        html += '<div class="grid-summary">';
+        html += '<div><strong>Total Experience:</strong> ' + totalExperienceYears.toFixed(2) + ' yrs (' + formatDuration(totalExperienceYears) + ')<br><span style="font-size:0.7rem;color:#64748b;">Pre-USA + Post-USA · Case ' + workCase + (workCase === 1 ? ' (≤5 yrs)' : ' (&gt;5 yrs)') + '</span></div>';
+        html += '<div><strong>Pre-USA:</strong> ' + preUsaYears.toFixed(2) + ' yrs (' + formatDuration(preUsaYears) + ')<br><span style="font-size:0.7rem;color:#64748b;">Start Work → USA Arrival</span></div>';
+        html += '<div><strong>Post-USA:</strong> ' + postUsaYears.toFixed(2) + ' yrs (' + formatDuration(postUsaYears) + ')<br><span style="font-size:0.7rem;color:#64748b;">Semester Start + 3mo → Today</span></div>';
+        html += '<div><strong>Career Start:</strong> ' + formatDate(startWorkDate) + '</div>';
+        html += '<div><strong>USA Arrival:</strong> ' + formatDate(arrivalDate) + '</div>';
+        html += '<div><strong>Post-USA Start:</strong> ' + formatDate(postUsaStart) + '</div>';
+        html += '<div><strong>Role Domain:</strong> ' + domainLabel + '</div>';
+        html += '<div><strong>Role Mapping:</strong> ';
+        if (workCase === 1) {
+            html += 'A=L' + roleMap.A.level + ', B=L' + roleMap.B.level + ', C=L' + roleMap.C.level;
+        } else {
+            html += 'A=L' + roleMap.A.level + ', B=L' + roleMap.B.level + ', C=L' + roleMap.C.level + ', D=L' + roleMap.D.level;
+        }
+        html += '</div>';
+        html += '</div>';
+
+        // Allocation table
+        html += '<table class="allocation-table">';
+        html += '<tr><th>#</th><th>Client Type</th><th>Company</th><th>Industry</th><th>Duration</th><th>Dates</th></tr>';
+        for (var r = 0; r < displayClients.length; r++) {
+            var rc = displayClients[r];
+            var durClass = (rc.durationYears > 0 && rc.durationYears < MIN_CLIENT_YEARS) ? 'warn-cell' : '';
+            html += '<tr>';
+            html += '<td>' + (r+1) + '</td>';
+            html += '<td>' + rc.label + '</td>';
+            html += '<td class="company">' + formatCompanyHtml(rc.company, rc.linkedin) + '</td>';
+            html += '<td>' + rc.industry + '</td>';
+            html += '<td class="' + durClass + '">' + clientDurationText(rc) + ' (' + rc.durationYears.toFixed(2) + ' yrs)</td>';
+            html += '<td style="font-size:0.7rem;font-family:monospace;">' + formatDate(rc.startDate) + ' → ' + formatDate(rc.endDate) + '</td>';
+            html += '</tr>';
+        }
+        html += '<tr class="total-row"><td colspan="4">TOTAL ALLOCATED</td><td>' + formatDuration(allocatedTotal) + ' (' + allocatedTotal.toFixed(2) + ' yrs)</td><td></td></tr>';
+        html += '</table>';
+
+        // Formula box
+        html += '<div class="formula-box">';
+        html += '<strong>Calculation Logic (Case ' + workCase + '):</strong><br>';
+        html += '① <code>Start Work Date</code> = ' + formatDate(startWorkDate) + ' (DOB year ' + dobYear + ' → June mapping)<br>';
+        html += '② <code>Pre-USA</code> = Start Work → USA Arrival = ' + formatDate(startWorkDate) + ' → ' + formatDate(arrivalDate) + ' = <code>' + preUsaYears.toFixed(2) + ' yrs</code><br>';
+        html += '③ <code>Post-USA</code> = Semester Start + 3mo → Today = ' + formatDate(postUsaStart) + ' → Now = <code>' + postUsaYears.toFixed(2) + ' yrs</code><br>';
+        html += '④ <code>Total Experience</code> = Pre-USA + Post-USA = <code>' + totalExperienceYears.toFixed(2) + ' yrs</code> → <strong>Case ' + workCase + '</strong> (' + (workCase === 1 ? '≤5 yrs' : '>5 yrs') + ')<br>';
+
+        if (workCase === 1) {
+            html += '⑤ <code>CLIENT_C</code> Pre-US/Manufacturing: Start Work → Arrival = <code>' + formatDuration(clients[0].durationYears) + '</code><br>';
+            html += '⑥ <code>CLIENT_B</code> State: Arrival + 3mo → +1.2–1.5 yrs = <code>' + formatDuration(clients[1].durationYears) + '</code><br>';
+            html += '⑦ <code>CLIENT_A</code> Latest: State End + 1 day → Today = <code>' + formatDuration(clients[2].durationYears) + '</code>';
+            if (clients[2].durationYears < MIN_CLIENT_YEARS) html += ' <span class="step-warn">⚠️ Less than 8 months</span>';
+        } else {
+            html += '⑤ <code>CLIENT_D</code> Pre-US/Manufacturing: Start Work → split pre-US = <code>' + formatDuration(clients[0].durationYears) + '</code><br>';
+            html += '⑥ <code>CLIENT_C</code> Retail: after CLIENT_D → before State gap = <code>' + formatDuration(clients[1].durationYears) + '</code><br>';
+            html += '⑦ <code>CLIENT_B</code> State: CLIENT_C end + 3mo → min 1.2 yrs = <code>' + formatDuration(clients[2].durationYears) + '</code><br>';
+            html += '⑧ <code>CLIENT_A</code> Latest: CLIENT_B end + 1 day → Today = <code>' + formatDuration(clients[3].durationYears) + '</code>';
+            if (clients[3].durationYears < MIN_CLIENT_YEARS) html += ' <span class="step-warn">⚠️ Less than 8 months</span>';
+        }
+        html += '</div>';
+
+        // Timeline visual
+        html += '<div class="timeline-visual tl-' + numClients + '">';
+        for (var t = 0; t < displayClients.length; t++) {
+            var tc = displayClients[t];
+            var tlClass = 'tl-' + tc.type;
+            var durClass = (tc.durationYears > 0 && tc.durationYears < MIN_CLIENT_YEARS) ? 'dur-warn' : 'dur-ok';
+            html += '<div class="tl-node ' + tlClass + '">';
+            html += '<div class="tl-label">' + formatCompanyHtml(tc.company, tc.linkedin) + ' — ' + tc.role + '</div>';
+            html += '<div class="tl-dates">' + formatDate(tc.startDate) + ' → ' + formatDate(tc.endDate) + '</div>';
+            html += '<div class="tl-dur ' + durClass + '">' + clientDurationText(tc) + '</div>';
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // Client detail cards
+        html += '<div style="font-weight:700; margin-bottom:0.5rem;">CLIENT TIMELINE (Most Recent First)</div>';
+        html += '<div class="client-list">';
+        for (var k = 0; k < displayClients.length; k++) {
+            var cl = displayClients[k];
+            var itemClass = 'client-item';
+            if (cl.type === 'state') itemClass += ' state-item';
+            if (cl.type === 'latest') itemClass += ' latest-item';
+            if (cl.type === 'early') itemClass += ' early-item';
+            if (cl.type === 'tertiary') itemClass += ' tertiary-item';
+
+            html += '<div class="' + itemClass + '">';
+            html += '<div class="flex-between">';
+            html += '<span style="font-weight:700;">';
+            if (cl.type === 'latest') html += '⭐ Latest Client (CLIENT_A)';
+            else if (cl.type === 'state') html += '🏛️ State Client (CLIENT_B)';
+            else if (cl.type === 'tertiary') html += '📊 Third Client (CLIENT_C)';
+            else html += '⚙️ Pre-US Client (' + (workCase === 1 ? 'CLIENT_C' : 'CLIENT_D') + ')';
+            html += '</span>';
+            html += '<span class="duration">' + clientDurationText(cl) + '</span>';
+            html += '</div>';
+            html += '<div><span class="company">' + formatCompanyHtml(cl.company, cl.linkedin) + '</span> · <span style="color:#2c5282;">' + cl.industry + '</span></div>';
+            html += '<div class="role-tag">' + cl.role;
+            if (cl.roleLevel) html += ' <span class="level-indicator">L' + cl.roleLevel + '</span>';
+            html += '</div>';
+            html += '<div class="date-range">' + formatDate(cl.startDate) + ' – ' + formatDate(cl.endDate) + '</div>';
+            if (cl.durationYears > 0 && cl.durationYears < MIN_CLIENT_YEARS) {
+                html += '<div style="font-size:0.7rem;color:#b45309;margin-top:4px;">⚠️ ' + cl.label + ' has only ' + formatDuration(cl.durationYears) + ' (less than 8 months)</div>';
+            }
+            if (cl.type === 'state') {
+                html += '<div style="font-size:0.65rem;color:#92400e;margin-top:4px;">📌 State client: 1.2–1.5 yrs (rules.txt)</div>';
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // Verification
+        html += '<div style="margin-top:1rem; background:#f0fdf4; border:1px solid #bbf7d0; padding:0.8rem 1rem; border-radius:1rem; font-size:0.75rem; color:#166534;">';
+        html += '<strong>Verification:</strong> ';
+        var durParts = [];
+        for (var v = 0; v < clients.length; v++) durParts.push(clients[v].durationYears.toFixed(2));
+        html += durParts.join(' + ') + ' = <strong>' + allocatedTotal.toFixed(2) + ' yrs</strong>';
+        html += ' | Total experience = ' + totalExperienceYears.toFixed(2) + ' yrs → Case ' + workCase;
+        html += ' | Pre-USA = ' + preUsaYears.toFixed(2) + ' · Post-USA = ' + postUsaYears.toFixed(2);
+        html += '</div>';
+
+        html += '</div>'; // close exp-card
+        document.getElementById('resultsArea').innerHTML = html;
+    }
+
+    document.getElementById('techDomain').addEventListener('change', function(e) {
+        document.getElementById('customRoleDiv').style.display = e.target.value === 'other' ? 'block' : 'none';
+    });
+    document.getElementById('generateBtn').addEventListener('click', generate);
+
+    window.addEventListener('load', function() {
+        initDatePicker('dob', 1970, 2010, new Date(2000, 5, 15));
+        initDatePicker('arrivalUsa', 2015, 2030, new Date(2023, 7, 1));
+        initDatePicker('firstSemStart', 2015, 2030, new Date(2023, 8, 6));
+        initDatePicker('optStart', 2020, 2035, new Date(2025, 1, 11));
+        document.getElementById('university').value = "Carnegie Mellon University";
+        initData();
+    });
+</script>
 </body>
 </html>
