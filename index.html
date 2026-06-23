@@ -65,6 +65,48 @@
         .allocation-table .warn-cell { color: #b45309; font-weight: 600; }
         @media (max-width: 720px) { .form-panel, .results { padding: 1.25rem; } .grid-summary > div { min-width: 140px; } }
         footer { font-size: 0.7rem; text-align: center; color: #5b6e8c; padding: 1rem; }
+        .json-import { margin-bottom: 1.2rem; padding: 0.9rem 1.2rem; background: #eef4ff; border-radius: 1rem; border: 1px dashed #93c5fd; }
+        .json-import textarea { min-height: 5.5rem; resize: vertical; font-family: ui-monospace, monospace; font-size: 0.8rem; line-height: 1.45; }
+        .json-import-actions { display: flex; gap: 0.6rem; margin-top: 0.5rem; }
+        .json-import-actions button { width: auto; margin-top: 0; padding: 0.55rem 1.2rem; font-size: 0.85rem; }
+        .json-import-status { font-size: 0.75rem; margin-top: 0.35rem; }
+        .json-import-status.ok { color: #059669; }
+        .json-import-status.err { color: #dc2626; }
+        .json-import-status.warn { color: #b45309; }
+        .field.field-missing label { color: #dc2626; }
+        .field.field-missing input,
+        .field.field-missing select,
+        .field.field-missing .date-row select {
+            border-color: #dc2626;
+            background: #fef2f2;
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+        }
+        .field.field-missing label::after {
+            content: ' — not in paste';
+            font-weight: 500;
+            font-size: 0.7rem;
+            color: #dc2626;
+        }
+        .field.field-filled input,
+        .field.field-filled select,
+        .field.field-filled .date-row select {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+        .json-import-actions button.btn-secondary {
+            background: white;
+            color: #0f3b5f;
+            border: 1px solid #0f3b5f;
+        }
+        .json-import-actions button.btn-secondary:hover { background: #f0f9ff; }
+        .resume-prompt-panel { padding: 1.5rem 2rem 2rem; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+        .resume-prompt-panel h3 { margin: 0 0 0.35rem; color: #0f3b5f; font-size: 1.1rem; }
+        .resume-prompt-panel p { margin: 0 0 1rem; font-size: 0.82rem; color: #64748b; }
+        .resume-prompt-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+        .resume-prompt-actions button { width: auto; margin-top: 0; padding: 0.65rem 1.4rem; font-size: 0.9rem; }
+        .resume-prompt-status { font-size: 0.75rem; color: #64748b; }
+        .resume-prompt-status.ok { color: #059669; }
+        .resume-prompt-status.err { color: #dc2626; }
     </style>
 </head>
 <body>
@@ -75,12 +117,23 @@
             <strong>Case 1:</strong> total experience ≤ 5 yrs → 3 clients (Pre-US → State → Latest)<br>
             <strong>Case 2:</strong> total experience &gt; 5 yrs → 4 clients (Pre-US → Retail → State → Latest)
         </p>
-        <div class="grid-2">
-            <div class="field"><label>First name</label><input type="text" id="firstName" placeholder="John"></div>
-            <div class="field"><label>Last name</label><input type="text" id="lastName" placeholder="Doe"></div>
-            <div class="field"><label>Email</label><input type="email" id="email" placeholder="john@example.com"></div>
-            <div class="field"><label>Phone</label><input type="tel" id="phone" placeholder="+1 234 567 8900"></div>
+        <div class="json-import">
             <div class="field">
+                <label>Paste profile data (auto-fill fields below)</label>
+                <textarea id="jsonProfileInput" placeholder="FIRST_NAME: Raghuvamsi&#10;LAST_NAME: Galla&#10;EMAIL: raghuvamc119@gmail.com&#10;PHONE: 414-539-7475&#10;DATE_OF_BIRTH: 30/06/1994&#10;FIRST_SEMESTER_START: 05/09/2022&#10;HIGHEST_DEGREE: Masters&#10;UNIVERSITY: university of Wisconsin Milwaukee&#10;TECHNOLOGY_DOMAIN_LATEST: .net"></textarea>
+                <div class="json-import-actions">
+                    <button type="button" id="jsonProfileCopySchemaBtn" class="btn-secondary">Copy Schema</button>
+                    <button type="button" id="jsonProfileFillBtn">Auto Fill</button>
+                </div>
+                <div id="jsonImportStatus" class="json-import-status">Paste key:value lines or JSON, then click Auto Fill. Missing fields are marked in red.</div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div class="field" data-profile-field="firstName"><label>First name</label><input type="text" id="firstName" placeholder="John"></div>
+            <div class="field" data-profile-field="lastName"><label>Last name</label><input type="text" id="lastName" placeholder="Doe"></div>
+            <div class="field" data-profile-field="email"><label>Email</label><input type="email" id="email" placeholder="john@example.com"></div>
+            <div class="field" data-profile-field="phone"><label>Phone</label><input type="tel" id="phone" placeholder="+1 234 567 8900"></div>
+            <div class="field" data-profile-field="dob">
                 <label>DOB</label>
                 <div class="date-row" data-date="dob">
                     <select id="dobYear" aria-label="DOB year"></select>
@@ -88,7 +141,7 @@
                     <select id="dobDay" aria-label="DOB day"></select>
                 </div>
             </div>
-            <div class="field">
+            <div class="field" data-profile-field="arrivalUsa">
                 <label>First USA arrival</label>
                 <div class="date-row" data-date="arrivalUsa">
                     <select id="arrivalUsaYear" aria-label="First USA arrival year"></select>
@@ -96,7 +149,7 @@
                     <select id="arrivalUsaDay" aria-label="First USA arrival day"></select>
                 </div>
             </div>
-            <div class="field">
+            <div class="field" data-profile-field="firstSemStart">
                 <label>First Semester Start</label>
                 <div class="date-row" data-date="firstSemStart">
                     <select id="firstSemStartYear" aria-label="First Semester Start year"></select>
@@ -104,7 +157,7 @@
                     <select id="firstSemStartDay" aria-label="First Semester Start day"></select>
                 </div>
             </div>
-            <div class="field">
+            <div class="field" data-profile-field="optStart">
                 <label>OPT Start Date</label>
                 <div class="date-row" data-date="optStart">
                     <select id="optStartYear" aria-label="OPT Start Date year"></select>
@@ -112,9 +165,9 @@
                     <select id="optStartDay" aria-label="OPT Start Date day"></select>
                 </div>
             </div>
-            <div class="field"><label>Highest Degree</label><select id="degree"><option value="B.Tech">B.Tech</option><option value="Masters" selected>Masters</option></select></div>
-            <div class="field"><label>University</label><input type="text" id="university" placeholder="e.g., Stanford"></div>
-            <div class="field">
+            <div class="field" data-profile-field="degree"><label>Highest Degree</label><select id="degree"><option value="">— Select —</option><option value="B.Tech">B.Tech</option><option value="Masters">Masters</option></select></div>
+            <div class="field" data-profile-field="university"><label>University</label><input type="text" id="university" placeholder="e.g., Stanford"></div>
+            <div class="field" data-profile-field="techDomain">
                 <label>Technology Domain (Latest Client Role)</label>
                 <select id="techDomain">
                     <option value="">Loading domains...</option>
@@ -128,6 +181,14 @@
     </div>
     <div class="results" id="resultsArea">
         <div style="text-align:center; color:#6c757d; padding:2rem;">Fill in all date fields and click Generate.</div>
+    </div>
+    <div class="resume-prompt-panel" id="resumePromptPanel">
+        <h3>Resume System Prompt</h3>
+        <p>Click <strong>Generate Profile</strong> first, then copy the prompt below and paste it into your AI tool to create a sample resume (DOC or PDF).</p>
+        <div class="resume-prompt-actions">
+            <button type="button" id="copyResumePromptBtn" disabled>Copy Prompt</button>
+            <span id="copyResumePromptStatus" class="resume-prompt-status">Generate a profile to enable Copy Prompt.</span>
+        </div>
     </div>
     <footer>Rules from rules.txt · Case 1 (≤5 yrs): 3 clients · Case 2 (&gt;5 yrs): 4 clients</footer>
 </div>
@@ -503,7 +564,7 @@ window.__MARKETING_DATA__.roles = {
             "Software Engineer",
             "Software Developer",
             "Software Engineer II",
-            "Application Software Engineer",
+            "Application Software Engineer"
           ]
         },
         {
@@ -512,19 +573,19 @@ window.__MARKETING_DATA__.roles = {
             "Senior Software Engineer",
             "Senior Software Developer",
             "Software Engineer III",
-            "Senior Application Engineer",
+            "Senior Application Engineer"
           ]
         },
-       {
-        "level": 4,
-        "roles": [
-        "Senior Full Stack Engineer",
-        "Senior Software Engineer",
-        "Full Stack  Engineer",
-        "Software Engineer IV",
-        "Senior Backend Engineer"
-      ]
-      }
+        {
+          "level": 4,
+          "roles": [
+            "Senior Full Stack Engineer",
+            "Senior Software Engineer",
+            "Full Stack Engineer",
+            "Software Engineer IV",
+            "Senior Backend Engineer"
+          ]
+        }
       ]
     },
     {
@@ -807,15 +868,19 @@ window.__MARKETING_DATA__.rules = {
     var STATE_CLIENTS_KEY = "State_Clients_High_Contract_Volume";
     var dataReady = false;
     var MIN_CLIENT_YEARS = 8 / 12;
+    var lastProfileSnapshot = null;
 
     function populateTechDomainSelect() {
         var select = document.getElementById('techDomain');
         select.innerHTML = '';
+        var emptyOpt = document.createElement('option');
+        emptyOpt.value = '';
+        emptyOpt.textContent = '— Select —';
+        select.appendChild(emptyOpt);
         for (var i = 0; i < ROLE_CATEGORIES.length; i++) {
             var opt = document.createElement('option');
             opt.value = ROLE_CATEGORIES[i].name;
             opt.textContent = ROLE_CATEGORIES[i].name;
-            if (i === 1) opt.selected = true;
             select.appendChild(opt);
         }
         var otherOpt = document.createElement('option');
@@ -946,9 +1011,9 @@ window.__MARKETING_DATA__.rules = {
         var yearEl = document.getElementById(prefix + 'Year');
         var monthEl = document.getElementById(prefix + 'Month');
         var dayEl = document.getElementById(prefix + 'Day');
-        var defaultYear = defaultDate.getFullYear();
-        var defaultMonth = defaultDate.getMonth() + 1;
-        var defaultDay = defaultDate.getDate();
+        var defaultYear = defaultDate ? defaultDate.getFullYear() : null;
+        var defaultMonth = defaultDate ? defaultDate.getMonth() + 1 : null;
+        var defaultDay = defaultDate ? defaultDate.getDate() : null;
 
         populateYearSelect(yearEl, minYear, maxYear, defaultYear);
         populateMonthSelect(monthEl, defaultMonth);
@@ -965,6 +1030,102 @@ window.__MARKETING_DATA__.rules = {
         monthEl.addEventListener('change', refreshDays);
     }
 
+    function clearDatePicker(prefix) {
+        var yearEl = document.getElementById(prefix + 'Year');
+        var monthEl = document.getElementById(prefix + 'Month');
+        var dayEl = document.getElementById(prefix + 'Day');
+        yearEl.value = '';
+        monthEl.value = '';
+        dayEl.innerHTML = '<option value="">Day</option>';
+        dayEl.value = '';
+    }
+
+    var PROFILE_SCHEMA = [
+        '{',
+        '  "SCHEMA_HINT": "All date fields must be in DD/MM/YYYY format (e.g., 30/06/1994)",',
+        '  "FIRST_NAME": "",',
+        '  "LAST_NAME": "",',
+        '  "EMAIL": "",',
+        '  "PHONE": "",',
+        '  "DATE_OF_BIRTH": "",',
+        '  "FIRST_USA_ARRIVAL": "",',
+        '  "FIRST_SEMESTER_START": "",',
+        '  "OPT_START_DATE": "",',
+        '  "HIGHEST_DEGREE": "",',
+        '  "UNIVERSITY": "",',
+        '  "TECHNOLOGY_DOMAIN_LATEST": "",',
+        '  "CLIENT_ROLE": ""',
+        '}'
+    ].join('\n');
+
+    var PROFILE_FIELD_IDS = [
+        'firstName', 'lastName', 'email', 'phone',
+        'dob', 'arrivalUsa', 'firstSemStart', 'optStart',
+        'degree', 'university', 'techDomain'
+    ];
+
+    function markProfileField(fieldId, isFilled) {
+        var wrapper = document.querySelector('[data-profile-field="' + fieldId + '"]');
+        if (!wrapper) return;
+        wrapper.classList.toggle('field-missing', !isFilled);
+        wrapper.classList.toggle('field-filled', isFilled);
+    }
+
+    function clearProfileFieldMarks() {
+        for (var i = 0; i < PROFILE_FIELD_IDS.length; i++) {
+            markProfileField(PROFILE_FIELD_IDS[i], false);
+        }
+        document.querySelectorAll('[data-profile-field]').forEach(function(el) {
+            el.classList.remove('field-missing', 'field-filled');
+        });
+    }
+
+    function clearAllProfileFields() {
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('phone').value = '';
+        clearDatePicker('dob');
+        clearDatePicker('arrivalUsa');
+        clearDatePicker('firstSemStart');
+        clearDatePicker('optStart');
+        document.getElementById('degree').value = '';
+        document.getElementById('university').value = '';
+        document.getElementById('customRole').value = '';
+        document.getElementById('customRoleDiv').style.display = 'none';
+        document.getElementById('techDomain').value = '';
+    }
+
+    function isDatePickerComplete(prefix) {
+        return !!getDateFromPicker(prefix);
+    }
+
+    function isTechDomainFilled() {
+        var select = document.getElementById('techDomain');
+        if (!select.value || select.value === '') return false;
+        if (select.value === 'other') {
+            return document.getElementById('customRole').value.trim() !== '';
+        }
+        return true;
+    }
+
+    function copyProfileSchema() {
+        var statusEl = document.getElementById('jsonImportStatus');
+        function onCopied() {
+            statusEl.className = 'json-import-status ok';
+            statusEl.textContent = 'Schema copied to clipboard. Paste it, fill values, then click Auto Fill.';
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(PROFILE_SCHEMA).then(onCopied).catch(function() {
+                document.getElementById('jsonProfileInput').value = PROFILE_SCHEMA;
+                onCopied();
+            });
+        } else {
+            document.getElementById('jsonProfileInput').value = PROFILE_SCHEMA;
+            onCopied();
+        }
+    }
+
     function getDateFromPicker(prefix) {
         var year = parseInt(document.getElementById(prefix + 'Year').value, 10);
         var month = parseInt(document.getElementById(prefix + 'Month').value, 10);
@@ -973,6 +1134,406 @@ window.__MARKETING_DATA__.rules = {
         return new Date(year, month - 1, day);
     }
 
+    function normalizeJsonKey(key) {
+        return String(key).toUpperCase().replace(/_+$/, '');
+    }
+
+    function getJsonValue(data) {
+        var aliases = Array.prototype.slice.call(arguments, 1);
+        var lookup = {};
+        for (var prop in data) {
+            if (!Object.prototype.hasOwnProperty.call(data, prop)) continue;
+            lookup[normalizeJsonKey(prop)] = data[prop];
+        }
+        for (var i = 0; i < aliases.length; i++) {
+            var val = lookup[normalizeJsonKey(aliases[i])];
+            if (val !== undefined && val !== null && String(val).trim() !== '') {
+                return String(val).trim();
+            }
+        }
+        return '';
+    }
+
+    function parseProfileDate(value) {
+        if (!value) return null;
+        var s = String(value).trim();
+        if (!s) return null;
+
+        var iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (iso) return new Date(parseInt(iso[1], 10), parseInt(iso[2], 10) - 1, parseInt(iso[3], 10));
+
+        var slash = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (slash) {
+            var a = parseInt(slash[1], 10);
+            var b = parseInt(slash[2], 10);
+            var y = parseInt(slash[3], 10);
+            var day = a;
+            var month = b;
+            if (a <= 12 && b > 12) {
+                month = a;
+                day = b;
+            }
+            return new Date(y, month - 1, day);
+        }
+
+        var parsed = new Date(s);
+        return isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function ensureYearOption(yearEl, year) {
+        for (var i = 0; i < yearEl.options.length; i++) {
+            if (parseInt(yearEl.options[i].value, 10) === year) return;
+        }
+        var opt = document.createElement('option');
+        opt.value = year;
+        opt.textContent = year;
+        yearEl.insertBefore(opt, yearEl.options[1] || null);
+    }
+
+    function setDatePicker(prefix, date) {
+        if (!date || isNaN(date.getTime())) return false;
+        var yearEl = document.getElementById(prefix + 'Year');
+        var monthEl = document.getElementById(prefix + 'Month');
+        var dayEl = document.getElementById(prefix + 'Day');
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+
+        ensureYearOption(yearEl, year);
+        yearEl.value = String(year);
+        monthEl.value = String(month);
+        populateDaySelect(dayEl, year, month, day);
+        dayEl.value = String(day);
+        return true;
+    }
+
+    function setSelectValue(selectEl, value) {
+        if (!value) return false;
+        var target = value.toLowerCase();
+        for (var i = 0; i < selectEl.options.length; i++) {
+            var opt = selectEl.options[i];
+            if (opt.value.toLowerCase() === target || opt.textContent.toLowerCase() === target) {
+                selectEl.value = opt.value;
+                return true;
+            }
+        }
+        for (var j = 0; j < selectEl.options.length; j++) {
+            var opt2 = selectEl.options[j];
+            if (opt2.textContent.toLowerCase().indexOf(target) !== -1 || target.indexOf(opt2.value.toLowerCase()) !== -1) {
+                selectEl.value = opt2.value;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function setTechDomainFromJson(domainValue, clientRole) {
+        var select = document.getElementById('techDomain');
+        var customDiv = document.getElementById('customRoleDiv');
+        var customInput = document.getElementById('customRole');
+        var role = clientRole || '';
+        var domain = domainValue || '';
+
+        if (role) {
+            if (!setSelectValue(select, domain) && domain) {
+                select.value = 'other';
+                customDiv.style.display = 'block';
+                customInput.value = role;
+            } else if (select.value === 'other') {
+                customDiv.style.display = 'block';
+                customInput.value = role;
+            } else {
+                customDiv.style.display = 'none';
+                customInput.value = '';
+            }
+            return;
+        }
+
+        if (!domain) return;
+
+        var domainMap = {
+            '.net': 'Core Software Engineering',
+            'dotnet': 'Core Software Engineering',
+            'net': 'Core Software Engineering',
+            'java': 'Core Software Engineering',
+            'python': 'AI + Data Intelligence',
+            'ai': 'AI + Data Intelligence',
+            'ml': 'AI + Data Intelligence',
+            'sap': 'SAP / Enterprise Systems',
+            'security': 'Cybersecurity',
+            'cyber': 'Cybersecurity',
+            'analytics': 'Analytics & Business',
+            'bi': 'Analytics & Business'
+        };
+
+        var key = domain.toLowerCase().replace(/^\./, '');
+        if (domainMap[key] && setSelectValue(select, domainMap[key])) {
+            customDiv.style.display = 'none';
+            customInput.value = '';
+            return;
+        }
+
+        if (setSelectValue(select, domain)) {
+            customDiv.style.display = 'none';
+            customInput.value = '';
+            return;
+        }
+
+        select.value = 'other';
+        customDiv.style.display = 'block';
+        customInput.value = domain;
+    }
+
+    function applyProfileFromJson(data) {
+        if (!data || typeof data !== 'object') throw new Error('JSON must be an object.');
+
+        clearAllProfileFields();
+        clearProfileFieldMarks();
+
+        var filled = [];
+        var missing = [];
+        var fieldLabels = {
+            firstName: 'First name',
+            lastName: 'Last name',
+            email: 'Email',
+            phone: 'Phone',
+            dob: 'DOB',
+            arrivalUsa: 'First USA arrival',
+            firstSemStart: 'First semester start',
+            optStart: 'OPT start',
+            degree: 'Degree',
+            university: 'University',
+            techDomain: 'Technology domain'
+        };
+
+        function record(fieldId, ok) {
+            markProfileField(fieldId, ok);
+            if (ok) filled.push(fieldLabels[fieldId]);
+            else missing.push(fieldLabels[fieldId]);
+        }
+
+        var firstName = getJsonValue(data, 'FIRST_NAME', 'first_name', 'firstName');
+        if (firstName) document.getElementById('firstName').value = firstName;
+        record('firstName', !!firstName);
+
+        var lastName = getJsonValue(data, 'LAST_NAME', 'last_name', 'lastName');
+        if (lastName) document.getElementById('lastName').value = lastName;
+        record('lastName', !!lastName);
+
+        var email = getJsonValue(data, 'EMAIL', 'email');
+        if (email) document.getElementById('email').value = email;
+        record('email', !!email);
+
+        var phone = getJsonValue(data, 'PHONE', 'phone');
+        if (phone) document.getElementById('phone').value = phone;
+        record('phone', !!phone);
+
+        var dob = parseProfileDate(getJsonValue(data, 'DATE_OF_BIRTH', 'DOB', 'dob', 'date_of_birth'));
+        if (dob) setDatePicker('dob', dob);
+        record('dob', !!dob);
+
+        var arrival = parseProfileDate(getJsonValue(data, 'FIRST_USA_ARRIVAL', 'USA_ARRIVAL', 'arrival_usa', 'firstUsaArrival'));
+        if (arrival) setDatePicker('arrivalUsa', arrival);
+        record('arrivalUsa', !!arrival);
+
+        var semStart = parseProfileDate(getJsonValue(data, 'FIRST_SEMESTER_START', 'SEMESTER_START', 'first_semester_start', 'firstSemStart'));
+        if (semStart) setDatePicker('firstSemStart', semStart);
+        record('firstSemStart', !!semStart);
+
+        var optStart = parseProfileDate(getJsonValue(data, 'OPT_START_DATE', 'OPT_START', 'opt_start_date', 'optStart'));
+        if (optStart) setDatePicker('optStart', optStart);
+        record('optStart', !!optStart);
+
+        var degree = getJsonValue(data, 'HIGHEST_DEGREE', 'DEGREE', 'highest_degree', 'degree');
+        if (degree) {
+            var degreeSelect = document.getElementById('degree');
+            if (!setSelectValue(degreeSelect, degree)) {
+                if (/master/i.test(degree)) degreeSelect.value = 'Masters';
+                else if (/b\.?tech|bachelor/i.test(degree)) degreeSelect.value = 'B.Tech';
+            }
+        }
+        record('degree', !!degree);
+
+        var university = getJsonValue(data, 'UNIVERSITY', 'university', 'SCHOOL');
+        if (university) document.getElementById('university').value = university;
+        record('university', !!university);
+
+        var techDomain = getJsonValue(data, 'TECHNOLOGY_DOMAIN_LATEST', 'TECHNOLOGY_DOMAIN', 'TECH_DOMAIN', 'technology_domain');
+        var clientRole = getJsonValue(data, 'CLIENT_ROLE', 'ROLE', 'client_role', 'JOB_TITLE');
+        if (techDomain || clientRole) setTechDomainFromJson(techDomain, clientRole);
+        record('techDomain', !!(techDomain || clientRole));
+
+        return { filled: filled, missing: missing };
+    }
+
+    function parsePastedProfile(text) {
+        var raw = String(text || '').trim();
+        if (!raw) throw new Error('Paste profile data first.');
+
+        if (raw.charAt(0) === '{' || raw.charAt(0) === '[') {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                for (var prop in parsed) {
+                    if (normalizeJsonKey(prop) === 'SCHEMA_HINT') delete parsed[prop];
+                }
+            }
+            return parsed;
+        }
+
+        var data = {};
+        var lines = raw.split(/\r?\n/);
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line || line.charAt(0) === '#') continue;
+
+            var sep = line.indexOf(':');
+            if (sep === -1) sep = line.indexOf('=');
+            if (sep === -1) continue;
+
+            var key = line.slice(0, sep).trim();
+            var value = line.slice(sep + 1).trim();
+            if (!key || normalizeJsonKey(key) === 'SCHEMA_HINT') continue;
+            data[key] = value;
+        }
+
+        if (!Object.keys(data).length) {
+            throw new Error('No key:value lines found. Use FIRST_NAME: John format or JSON.');
+        }
+        return data;
+    }
+
+    function handleJsonProfilePaste() {
+        var statusEl = document.getElementById('jsonImportStatus');
+        var text = document.getElementById('jsonProfileInput').value;
+
+        statusEl.className = 'json-import-status';
+        statusEl.textContent = 'Parsing...';
+
+        try {
+            var data = parsePastedProfile(text);
+            var result = applyProfileFromJson(data);
+            if (result.filled.length && result.missing.length) {
+                statusEl.className = 'json-import-status warn';
+                statusEl.textContent = 'Filled: ' + result.filled.join(', ') + '. Missing (red): ' + result.missing.join(', ') + '.';
+            } else if (result.filled.length) {
+                statusEl.className = 'json-import-status ok';
+                statusEl.textContent = 'Auto-filled: ' + result.filled.join(', ') + '.';
+            } else {
+                statusEl.className = 'json-import-status err';
+                statusEl.textContent = 'No values found in paste. All fields marked red — fill schema and try again.';
+            }
+        } catch (err) {
+            statusEl.className = 'json-import-status err';
+            statusEl.textContent = err.message;
+        }
+    }
+
+    function formatDateLong(d) {
+        if (!d || isNaN(d.getTime())) return 'Not provided';
+        return d.toLocaleString('default', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function formatDateRange(start, end) {
+        return formatDate(start) + ' – ' + formatDate(end);
+    }
+
+    function buildResumeSystemPrompt(snapshot) {
+        if (!snapshot) return '';
+
+        var lines = [];
+        lines.push('SYSTEM PROMPT');
+        lines.push('');
+        lines.push('You are an expert resume writer. Using the candidate details below, prepare a professional sample resume.');
+        lines.push('');
+        lines.push('OUTPUT REQUIREMENTS');
+        lines.push('- Deliver the resume as DOC or PDF only (no other formats).');
+        lines.push('- Do NOT include any of the following on the resume: Date of Birth (DOB), First USA Arrival, First Semester Start, or OPT Start Date.');
+        lines.push('- Use reverse chronological order for professional experience (most recent role first).');
+        lines.push('- For each employer/client, set the job LOCATION to that company\'s primary global headquarters city and state/country (research the real HQ for each company name).');
+        lines.push('- Write a strong professional summary aligned to the technology domain and total experience.');
+        lines.push('- Add 4–6 realistic responsibility bullets per role, matched to role level (L1–L4) and industry.');
+        lines.push('- Keep all dates, tenure, employers, and education consistent with the data below — do not invent conflicting facts.');
+        lines.push('');
+        lines.push('---');
+        lines.push('');
+        lines.push('PERSONAL INFORMATION (for resume contact section only)');
+        lines.push('- Full Name: ' + snapshot.firstName + ' ' + snapshot.lastName);
+        lines.push('- Email: ' + snapshot.email);
+        lines.push('- Phone: ' + snapshot.phone);
+        lines.push('');
+        lines.push('EDUCATION');
+        lines.push('- Highest Degree: ' + snapshot.degree);
+        lines.push('- University: ' + snapshot.university);
+        lines.push('');
+        lines.push('CAREER OVERVIEW');
+        lines.push('- Technology Domain: ' + snapshot.domainLabel);
+        lines.push('- Total Experience: ' + snapshot.totalExperienceYears.toFixed(2) + ' years (' + formatDuration(snapshot.totalExperienceYears) + ')');
+        lines.push('- Pre-USA Experience: ' + snapshot.preUsaYears.toFixed(2) + ' years');
+        lines.push('- Post-USA Experience: ' + snapshot.postUsaYears.toFixed(2) + ' years');
+        lines.push('- Career Start Date: ' + formatDateLong(snapshot.startWorkDate));
+        lines.push('- Experience Case: Case ' + snapshot.workCase + ' (' + snapshot.numClients + ' clients)');
+        lines.push('');
+        lines.push('PROFESSIONAL EXPERIENCE (reverse chronology — most recent first)');
+        lines.push('For each entry include: Job Title, Company, Location (company HQ), Dates, Industry, and bullet responsibilities.');
+        lines.push('');
+
+        for (var i = 0; i < snapshot.clients.length; i++) {
+            var c = snapshot.clients[i];
+            lines.push((i + 1) + '. ' + c.label);
+            lines.push('   - Job Title: ' + c.role + (c.roleLevel ? ' (Level L' + c.roleLevel + ')' : ''));
+            lines.push('   - Company: ' + c.company);
+            lines.push('   - Industry: ' + c.industry);
+            lines.push('   - Location: [Use primary headquarters of ' + c.company + ']');
+            lines.push('   - Employment Dates: ' + formatDateRange(c.startDate, c.endDate) + ' (' + c.duration + ')');
+            lines.push('');
+        }
+
+        lines.push('---');
+        lines.push('');
+        lines.push('RESUME SECTIONS TO PRODUCE');
+        lines.push('1. Contact Information (name, email, phone only)');
+        lines.push('2. Professional Summary');
+        lines.push('3. Professional Experience');
+        lines.push('4. Education');
+        lines.push('5. Technical Skills (aligned to ' + snapshot.domainLabel + ')');
+        lines.push('');
+        lines.push('Now prepare the complete sample resume in DOC or PDF format using all details above.');
+
+        return lines.join('\n');
+    }
+
+    function setResumePromptReady(ready) {
+        document.getElementById('copyResumePromptBtn').disabled = !ready;
+        if (!ready) {
+            document.getElementById('copyResumePromptStatus').className = 'resume-prompt-status';
+            document.getElementById('copyResumePromptStatus').textContent = 'Generate a profile to enable Copy Prompt.';
+        }
+    }
+
+    function copyResumePrompt() {
+        var statusEl = document.getElementById('copyResumePromptStatus');
+        if (!lastProfileSnapshot) {
+            statusEl.className = 'resume-prompt-status err';
+            statusEl.textContent = 'Generate a profile first, then copy the prompt.';
+            return;
+        }
+
+        var prompt = buildResumeSystemPrompt(lastProfileSnapshot);
+        function onCopied() {
+            statusEl.className = 'resume-prompt-status ok';
+            statusEl.textContent = 'Resume system prompt copied to clipboard.';
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(prompt).then(onCopied).catch(function() {
+                window.prompt('Copy this resume prompt:', prompt);
+                onCopied();
+            });
+        } else {
+            window.prompt('Copy this resume prompt:', prompt);
+            onCopied();
+        }
+    }
     function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function weightedPick(wm) {
         var e = Object.entries(wm), t = e.reduce(function(s,x){return s+x[1];},0), r = Math.random()*t, a = 0;
@@ -1376,21 +1937,88 @@ window.__MARKETING_DATA__.rules = {
 
         html += '</div>'; // close exp-card
         document.getElementById('resultsArea').innerHTML = html;
+
+        lastProfileSnapshot = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phone: phone,
+            dob: dobDate,
+            arrivalDate: arrivalDate,
+            semStart: semStart,
+            optStart: optStart,
+            degree: degree,
+            university: university,
+            domainLabel: domainLabel,
+            startWorkDate: startWorkDate,
+            postUsaStart: postUsaStart,
+            totalExperienceYears: totalExperienceYears,
+            preUsaYears: preUsaYears,
+            postUsaYears: postUsaYears,
+            workCase: workCase,
+            numClients: numClients,
+            clients: displayClients.map(function(c) {
+                return {
+                    label: c.label,
+                    company: c.company,
+                    industry: c.industry,
+                    role: c.role,
+                    roleLevel: c.roleLevel,
+                    startDate: new Date(c.startDate),
+                    endDate: new Date(c.endDate),
+                    duration: clientDurationText(c)
+                };
+            })
+        };
+        setResumePromptReady(true);
+        document.getElementById('copyResumePromptStatus').className = 'resume-prompt-status ok';
+        document.getElementById('copyResumePromptStatus').textContent = 'Profile ready — click Copy Prompt to copy the resume system prompt.';
     }
 
     document.getElementById('techDomain').addEventListener('change', function(e) {
         document.getElementById('customRoleDiv').style.display = e.target.value === 'other' ? 'block' : 'none';
     });
+    document.getElementById('jsonProfileCopySchemaBtn').addEventListener('click', copyProfileSchema);
+    document.getElementById('jsonProfileFillBtn').addEventListener('click', handleJsonProfilePaste);
+    document.getElementById('copyResumePromptBtn').addEventListener('click', copyResumePrompt);
     document.getElementById('generateBtn').addEventListener('click', generate);
 
+    function bindProfileFieldClearMark(fieldId, el) {
+        if (!el) return;
+        var evt = el.tagName === 'SELECT' || el.type === 'date' ? 'change' : 'input';
+        el.addEventListener(evt, function() {
+            var ok = false;
+            if (fieldId === 'dob' || fieldId === 'arrivalUsa' || fieldId === 'firstSemStart' || fieldId === 'optStart') {
+                ok = isDatePickerComplete(fieldId);
+            } else if (fieldId === 'techDomain') {
+                ok = isTechDomainFilled();
+            } else {
+                ok = String(el.value || '').trim() !== '';
+            }
+            markProfileField(fieldId, ok);
+        });
+    }
+
     window.addEventListener('load', function() {
-        initDatePicker('dob', 1970, 2010, new Date(2000, 5, 15));
-        initDatePicker('arrivalUsa', 2015, 2030, new Date(2023, 7, 1));
-        initDatePicker('firstSemStart', 2015, 2030, new Date(2023, 8, 6));
-        initDatePicker('optStart', 2020, 2035, new Date(2025, 1, 11));
-        document.getElementById('university').value = "Carnegie Mellon University";
+        initDatePicker('dob', 1970, 2010, null);
+        initDatePicker('arrivalUsa', 2015, 2030, null);
+        initDatePicker('firstSemStart', 2015, 2030, null);
+        initDatePicker('optStart', 2020, 2035, null);
+        bindProfileFieldClearMark('firstName', document.getElementById('firstName'));
+        bindProfileFieldClearMark('lastName', document.getElementById('lastName'));
+        bindProfileFieldClearMark('email', document.getElementById('email'));
+        bindProfileFieldClearMark('phone', document.getElementById('phone'));
+        bindProfileFieldClearMark('degree', document.getElementById('degree'));
+        bindProfileFieldClearMark('university', document.getElementById('university'));
+        bindProfileFieldClearMark('techDomain', document.getElementById('techDomain'));
+        bindProfileFieldClearMark('techDomain', document.getElementById('customRole'));
+        ['dob', 'arrivalUsa', 'firstSemStart', 'optStart'].forEach(function(prefix) {
+            bindProfileFieldClearMark(prefix, document.getElementById(prefix + 'Year'));
+            bindProfileFieldClearMark(prefix, document.getElementById(prefix + 'Month'));
+            bindProfileFieldClearMark(prefix, document.getElementById(prefix + 'Day'));
+        });
         initData();
     });
 </script>
 </body>
-</html>
+</html> 
