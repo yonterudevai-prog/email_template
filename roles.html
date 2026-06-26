@@ -3,1480 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Role Atlas — A Categorised Index of Engineering, AI, SAP & Platform Roles</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@200;300;400;500&family=Fira+Code:wght@400&display=swap">
+<title>Role Atlas</title>
 <style>
-  :root {
-    --forest-dark:  #0d1310;
-    --forest-mid:   #1a2420;
-    --forest-light: #2a3a34;
-    --off-white:    #f4f4f4;
-    --pure-white:   #ffffff;
-    --soft-black:   #1a1a1a;
-    --ease-quiet:    cubic-bezier(.22, 1, .36, 1);
-    --ease-precise:  cubic-bezier(.4, 0, .2, 1);
-    --ease-emphasis: cubic-bezier(.16, 1, .3, 1);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--forest-dark);
-    color: var(--off-white);
-    font-family: 'Inter', sans-serif;
-    font-weight: 300;
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
-  }
-
-  ::selection {
-    background: var(--off-white);
-    color: var(--forest-dark);
-  }
-
-  /* ---- Typography utilities ---- */
-  .serif    { font-family: 'EB Garamond', serif; font-weight: 400; }
-  .mono     { font-family: 'Fira Code', monospace; font-weight: 400; }
-  .italic   { font-style: italic; }
-
-  .label {
-    font-family: 'Fira Code', monospace;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.5);
-    display: inline-block;
-  }
-
-  /* ---- Background grain ---- */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 25% 30%, rgba(244,244,244,0.018) 1px, transparent 1px),
-      radial-gradient(circle at 75% 70%, rgba(244,244,244,0.015) 1px, transparent 1px);
-    background-size: 4px 4px, 6px 6px;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  /* ---- Navigation ---- */
-  .nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    padding: 1.5rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(13, 19, 16, 0.78);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(244, 244, 244, 0.06);
-  }
-
-  .nav-brand {
-    font-family: 'EB Garamond', serif;
-    font-size: 1.25rem;
-    font-style: italic;
-    color: var(--off-white);
-    letter-spacing: 0.01em;
-  }
-
-  .nav-brand::before {
-    content: '※ ';
-    font-style: normal;
-    color: rgba(244, 244, 244, 0.5);
-    margin-right: 0.25rem;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 2.5rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    font-family: 'Fira Code', monospace;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.55);
-    text-decoration: none;
-    transition: color 300ms var(--ease-quiet);
-    position: relative;
-  }
-
-  .nav-links a:hover { color: var(--off-white); }
-
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    width: 0;
-    height: 1px;
-    background: var(--off-white);
-    transition: width 400ms var(--ease-quiet);
-  }
-
-  .nav-links a:hover::after { width: 100%; }
-
-  /* ---- Hero ---- */
-  .hero {
-    min-height: 100vh;
-    padding: 8rem 2rem 5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    background: linear-gradient(180deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-bg-text {
-    position: absolute;
-    top: 12rem;
-    right: -2rem;
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: clamp(8rem, 22vw, 22rem);
-    line-height: 0.85;
-    color: rgba(244, 244, 244, 0.025);
-    pointer-events: none;
-    user-select: none;
-    letter-spacing: -0.04em;
-  }
-
-  .hero-inner {
-    max-width: 1400px;
-    width: 100%;
-    margin: 0 auto;
-    position: relative;
-    z-index: 2;
-  }
-
-  .hero-label-row {
-    margin-bottom: 3rem;
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-  }
-
-  .hero-label-row::before {
-    content: '';
-    width: 48px;
-    height: 1px;
-    background: rgba(244, 244, 244, 0.4);
-  }
-
-  .hero-title {
-    font-family: 'EB Garamond', serif;
-    font-weight: 400;
-    font-size: clamp(3rem, 9vw, 9.5rem);
-    line-height: 0.98;
-    letter-spacing: -0.025em;
-    margin-bottom: 4rem;
-  }
-
-  .hero-title .italic {
-    font-style: italic;
-    color: rgba(244, 244, 244, 0.72);
-  }
-
-  .line-mask {
-    overflow: hidden;
-    display: block;
-    padding-bottom: 0.05em;
-  }
-
-  .line {
-    transform: translateY(110%);
-    display: block;
-    will-change: transform;
-  }
-
-  .hero-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 3.5rem;
-    padding-top: 3rem;
-    border-top: 1px solid rgba(244, 244, 244, 0.1);
-    max-width: 1000px;
-  }
-
-  .hero-meta-item .label { display: block; margin-bottom: 0.75rem; }
-  .hero-meta-item p {
-    font-size: 0.92rem;
-    color: rgba(244, 244, 244, 0.72);
-    line-height: 1.75;
-  }
-
-  /* ---- Counter strip ---- */
-  .counter-strip {
-    padding: 5rem 2rem;
-    background: var(--forest-mid);
-    border-top: 1px solid rgba(244, 244, 244, 0.06);
-    border-bottom: 1px solid rgba(244, 244, 244, 0.06);
-    position: relative;
-  }
-
-  .counter-grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-  }
-
-  .counter-item {
-    border-left: 1px solid rgba(244, 244, 244, 0.14);
-    padding-left: 1.75rem;
-    padding-right: 1rem;
-  }
-
-  .counter-num {
-    font-family: 'EB Garamond', serif;
-    font-size: 4.5rem;
-    line-height: 1;
-    color: var(--off-white);
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.02em;
-  }
-
-  .counter-label {
-    font-family: 'Fira Code', monospace;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.55);
-    margin-bottom: 0.5rem;
-  }
-
-  .counter-sub {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 0.85rem;
-    color: rgba(244, 244, 244, 0.45);
-  }
-
-  /* ---- Field note ---- */
-  .field-note {
-    padding: 6rem 2rem;
-    background: var(--forest-dark);
-    border-bottom: 1px solid rgba(244, 244, 244, 0.06);
-  }
-
-  .field-note-inner {
-    max-width: 860px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .field-note p {
-    font-family: 'EB Garamond', serif;
-    font-size: clamp(1.3rem, 2.5vw, 1.85rem);
-    line-height: 1.55;
-    color: rgba(244, 244, 244, 0.82);
-    font-style: italic;
-  }
-
-  .field-note .attr {
-    margin-top: 2rem;
-    font-family: 'Fira Code', monospace;
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.4);
-    font-style: normal;
-  }
-
-  /* ---- Category sections ---- */
-  .category {
-    padding: 9rem 2rem 8rem;
-    border-bottom: 1px solid rgba(244, 244, 244, 0.06);
-    position: relative;
-  }
-
-  .category-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .sticky-pair {
-    display: grid;
-    grid-template-columns: 5fr 7fr;
-    gap: 5rem;
-    align-items: start;
-  }
-
-  .sticky-left {
-    position: sticky;
-    top: 7rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding-right: 2rem;
-  }
-
-  .cat-number {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 1.4rem;
-    color: rgba(244, 244, 244, 0.38);
-    letter-spacing: 0.02em;
-  }
-
-  .cat-title {
-    font-family: 'EB Garamond', serif;
-    font-weight: 400;
-    font-size: clamp(2.5rem, 5vw, 4.75rem);
-    line-height: 1;
-    letter-spacing: -0.015em;
-    color: var(--off-white);
-  }
-
-  .cat-title .italic {
-    font-style: italic;
-    color: rgba(244, 244, 244, 0.62);
-  }
-
-  .cat-desc {
-    font-size: 0.95rem;
-    color: rgba(244, 244, 244, 0.7);
-    max-width: 400px;
-    line-height: 1.85;
-    margin-top: 0.5rem;
-  }
-
-  .cat-stat {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    padding-top: 2.5rem;
-    margin-top: 1rem;
-    border-top: 1px solid rgba(244, 244, 244, 0.1);
-    max-width: 400px;
-  }
-
-  .cat-stat-num {
-    font-family: 'EB Garamond', serif;
-    font-size: 3rem;
-    line-height: 1;
-    color: var(--off-white);
-  }
-
-  .cat-stat-label {
-    font-family: 'Fira Code', monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.5);
-    line-height: 1.5;
-  }
-
-  .cat-aside {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 0.95rem;
-    color: rgba(244, 244, 244, 0.45);
-    line-height: 1.7;
-    max-width: 400px;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(244, 244, 244, 0.06);
-  }
-
-  /* ---- Role list ---- */
-  .role-list {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .role-list-header {
-    display: grid;
-    grid-template-columns: 60px 1fr auto;
-    gap: 2rem;
-    padding: 0 0 1.25rem;
-    border-bottom: 1px solid rgba(244, 244, 244, 0.18);
-  }
-
-  .role-list-header span {
-    font-family: 'Fira Code', monospace;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.4);
-  }
-
-  .role-item {
-    display: grid;
-    grid-template-columns: 60px 1fr auto;
-    align-items: center;
-    gap: 2rem;
-    padding: 1.4rem 0;
-    border-bottom: 1px solid rgba(244, 244, 244, 0.06);
-    cursor: default;
-    transition: padding 500ms var(--ease-quiet),
-                background 500ms var(--ease-quiet);
-    position: relative;
-  }
-
-  .role-item:hover {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    background: rgba(244, 244, 244, 0.025);
-  }
-
-  .role-num {
-    font-family: 'Fira Code', monospace;
-    font-size: 12px;
-    color: rgba(244, 244, 244, 0.38);
-    letter-spacing: 0.05em;
-    align-self: baseline;
-  }
-
-  .role-name {
-    font-family: 'EB Garamond', serif;
-    font-weight: 400;
-    font-size: 1.4rem;
-    line-height: 1.35;
-    color: var(--off-white);
-    transition: font-style 400ms var(--ease-quiet),
-                color 400ms var(--ease-quiet);
-  }
-
-  .role-item:hover .role-name {
-    font-style: italic;
-    color: var(--pure-white);
-  }
-
-  .role-copy-btn {
-    font-family: 'Fira Code', monospace;
-    font-size: 11px;
-    color: rgba(244, 244, 244, 0.45);
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    justify-self: end;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .role-copy-btn:hover {
-    color: var(--off-white);
-  }
-
-  .role-copy-btn.copied {
-    color: rgba(244, 244, 244, 0.75);
-    text-decoration: none;
-  }
-
-  .role-arrow {
-    font-family: 'Fira Code', monospace;
-    font-size: 13px;
-    color: rgba(244, 244, 244, 0.35);
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: opacity 400ms var(--ease-quiet),
-                transform 400ms var(--ease-quiet);
-    align-self: baseline;
-  }
-
-  .role-item:hover .role-arrow {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  /* Leading bullet item (non-numbered) */
-  .role-item.leading .role-num::before {
-    content: '◆';
-    font-size: 9px;
-    color: rgba(244, 244, 244, 0.5);
-  }
-
-  .role-item.leading .role-num-text { display: none; }
-
-  /* ---- Animations ---- */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 1200ms var(--ease-quiet),
-                transform 1200ms var(--ease-quiet);
-  }
-
-  .fade-up.is-in {
-    opacity: 1;
-    transform: none;
-  }
-
-  .role-item.fade-in {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 800ms var(--ease-quiet),
-                transform 800ms var(--ease-quiet),
-                padding 500ms var(--ease-quiet),
-                background 500ms var(--ease-quiet);
-  }
-
-  .role-item.fade-in.is-in {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* ---- Footer ---- */
-  .footer {
-    padding: 7rem 2rem 3rem;
-    background: var(--forest-dark);
-    border-top: 1px solid rgba(244, 244, 244, 0.06);
-  }
-
-  .footer-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .footer-top {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 4rem;
-    align-items: end;
-    padding-bottom: 4rem;
-    border-bottom: 1px solid rgba(244, 244, 244, 0.08);
-  }
-
-  .footer-title {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-    line-height: 1.2;
-    color: rgba(244, 244, 244, 0.78);
-    max-width: 520px;
-  }
-
-  .footer-col h4 {
-    font-family: 'Fira Code', monospace;
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.45);
-    margin-bottom: 1.25rem;
-    font-weight: 400;
-  }
-
-  .footer-col p,
-  .footer-col li {
-    font-size: 0.88rem;
-    color: rgba(244, 244, 244, 0.6);
-    line-height: 1.8;
-  }
-
-  .footer-col ul {
-    list-style: none;
-  }
-
-  .footer-bottom {
-    margin-top: 3rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-family: 'Fira Code', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(244, 244, 244, 0.4);
-  }
-
-  .footer-bottom .mark {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    text-transform: none;
-    letter-spacing: 0;
-    font-size: 0.95rem;
-    color: rgba(244, 244, 244, 0.55);
-  }
-
-  /* ---- Responsive ---- */
-  @media (max-width: 980px) {
-    .sticky-pair {
-      grid-template-columns: 1fr;
-      gap: 3rem;
-    }
-    .sticky-left {
-      position: static;
-      padding-right: 0;
-    }
-    .hero-meta {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    .counter-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2.5rem 1.5rem;
-    }
-    .footer-top {
-      grid-template-columns: 1fr;
-      gap: 2.5rem;
-    }
-    .role-item,
-    .role-list-header {
-      grid-template-columns: 44px 1fr auto;
-      gap: 1.25rem;
-    }
-    .role-arrow { display: none; }
-    .nav-links { display: none; }
-    .category { padding: 5rem 1.5rem; }
-    .hero { padding: 6rem 1.5rem 3rem; }
-    .counter-strip { padding: 3.5rem 1.5rem; }
-    .field-note { padding: 4rem 1.5rem; }
-    .footer { padding: 4rem 1.5rem 2rem; }
-    .role-name { font-size: 1.2rem; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
-    .line { transform: none; }
-    .fade-up, .fade-in { opacity: 1; transform: none; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, sans-serif; font-size: 14px; color: #222; background: #fff; }
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar { width: 200px; padding: 16px; border-right: 1px solid #ddd; background: #fafafa; flex-shrink: 0; }
+  .sidebar h1 { font-size: 16px; margin: 0 0 12px; }
+  .sidebar a { display: block; padding: 6px 0; color: #333; text-decoration: none; }
+  .sidebar a:hover { text-decoration: underline; }
+  .main { flex: 1; padding: 16px 20px; overflow-x: auto; }
+  .main > p { color: #666; margin: 0 0 20px; }
+  section { margin-bottom: 32px; }
+  section h2 { font-size: 18px; margin: 0 0 4px; }
+  section .count { color: #888; font-size: 12px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  th { font-size: 12px; color: #666; font-weight: normal; background: #f5f5f5; }
+  td.num { width: 40px; color: #888; }
+  td.copy { width: 50px; text-align: right; }
+  .copy-btn { background: none; border: none; color: #0066cc; cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
+  .copy-btn:hover { color: #004499; }
+  @media (max-width: 700px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
+    .sidebar a { display: inline-block; margin-right: 16px; }
   }
 </style>
 </head>
 <body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>Role Atlas</h1>
+    <a href="#software">Software (14)</a>
+    <a href="#ai">AI / ML (22)</a>
+    <a href="#sap">SAP (19)</a>
+    <a href="#universal">Universal (42)</a>
+  </aside>
+  <main>
+    <p>97 roles · click <em>copy</em> to copy any title</p>
+    <div id="sections"></div>
+  </main>
+</div>
 
-  <!-- ===================== NAV ===================== -->
-  <nav class="nav">
-    <div class="nav-brand">Role Atlas</div>
-    <ul class="nav-links">
-      <li><a href="#software">01 / Software</a></li>
-      <li><a href="#ai">02 / AI</a></li>
-      <li><a href="#sap">03 / SAP</a></li>
-      <li><a href="#universal">04 / Universal</a></li>
-    </ul>
-  </nav>
+<script>
+var CATEGORIES = [
+  {
+    id: 'software',
+    title: 'Software Engineering',
+    roles: [
+      '.NET Developer',
+      'C# Developer',
+      'ASP.NET Core Developer',
+      'Software Engineer',
+      'Backend Engineer',
+      'Full Stack Engineer',
+      'Full Stack Developer (React / Angular + Backend)',
+      'Frontend Engineer',
+      'UI Engineer',
+      'Java Developer',
+      'Backend Java Engineer',
+      'Spring Boot Developer',
+      'React Developer',
+      'Angular Developer'
+    ]
+  },
+  {
+    id: 'ai',
+    title: 'AI / Machine Learning',
+    roles: [
+      'Agentic AI Engineer',
+      'AI Engineer',
+      'AI Developer',
+      'Generative AI Engineer',
+      'LLM Engineer',
+      'Applied AI Engineer',
+      'AI Systems Engineer',
+      'Machine Learning Engineer',
+      'Software Engineer (AI/ML)',
+      'Applied Data Scientist',
+      'Data Scientist',
+      'Research Scientist (AI/ML)',
+      'NLP Engineer',
+      'Computer Vision Engineer',
+      'Deep Learning Engineer',
+      'AI Solutions Architect',
+      'AI Infrastructure Engineer',
+      'MLOps Engineer',
+      'ML Platform Engineer',
+      'Data Engineer',
+      'Analytics Engineer',
+      'Business Intelligence Engineer'
+    ]
+  },
+  {
+    id: 'sap',
+    title: 'SAP',
+    roles: [
+      'SAP FICO Consultant',
+      'SAP ABAP Developer',
+      'SAP SuccessFactors Consultant',
+      'SAP S/4HANA Consultant',
+      'SAP MM Consultant',
+      'SAP SD Consultant',
+      'SAP Basis Administrator',
+      'SAP Security Consultant',
+      'SAP GRC Consultant',
+      'SAP HANA Developer / Consultant',
+      'SAP BW/BI Consultant',
+      'SAP Integration Consultant (PI/PO, CPI)',
+      'SAP Ariba Consultant',
+      'SAP PP Consultant',
+      'SAP PM Consultant',
+      'SAP Payroll Consultant',
+      'SAP TM (Transportation Management) Consultant',
+      'SAP QM (Quality Management) Consultant',
+      'SAP Analytics Cloud (SAC) Consultant'
+    ]
+  },
+  {
+    id: 'universal',
+    title: 'Universal / Platform',
+    roles: [
+      'IT Support Specialist',
+      'Service Desk Administrator',
+      'Help Desk Administrator',
+      'System Administrator',
+      'Application Support Engineer',
+      'Production Support Engineer',
+      'Incident Management Specialist',
+      'Microsoft 365 Administrator',
+      'Active Directory Administrator',
+      'Cloud Administrator',
+      'Security Administrator',
+      'IAM Administrator',
+      'Salesforce Administrator',
+      'Salesforce Developer',
+      'Salesforce Platform Developer',
+      'ServiceNow Administrator',
+      'Workflow Administrator',
+      'Business Process Administrator',
+      'Integration Administrator',
+      'RPA Developer',
+      'RPA Administrator',
+      'Platform Administrator',
+      'Salesforce Consultant',
+      'Salesforce Business Analyst',
+      'Salesforce CPQ Consultant',
+      'Salesforce Service Cloud Consultant',
+      'Salesforce Sales Cloud Consultant',
+      'Salesforce Marketing Cloud Specialist',
+      'Salesforce Field Service Consultant',
+      'Salesforce Industries Consultant (Vlocity / OmniStudio)',
+      'Google Workspace Administrator',
+      'BI Administrator',
+      'Data Operations Specialist',
+      'Automation Specialist',
+      'Low-Code Developer',
+      'No-Code Developer',
+      'Salesforce Architect',
+      'Solution Architect',
+      'GRC Administrator',
+      'Salesforce Security Administrator',
+      'Salesforce Release Manager',
+      'Salesforce Data Cloud Consultant'
+    ]
+  }
+];
 
-  <!-- ===================== HERO ===================== -->
-  <section class="hero">
-    <div class="hero-bg-text" aria-hidden="true">Atlas</div>
-    <div class="hero-inner">
-      <div class="hero-label-row">
-        <span class="label">An Index — Vol. I — 2025</span>
-      </div>
-      <h1 class="hero-title">
-        <span class="line-mask"><span class="line" data-line="1">Ninety-seven roles,</span></span>
-        <span class="line-mask"><span class="line italic" data-line="2">four disciplines.</span></span>
-      </h1>
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <span class="label">Volume</span>
-          <p>A complete categorisation of engineering, AI, SAP, and platform roles — preserved verbatim, organised by domain.</p>
-        </div>
-        <div class="hero-meta-item">
-          <span class="label">Method</span>
-          <p>Each title is kept exactly as named in the source. Where numbering existed it is retained; where bullets led, those are marked.</p>
-        </div>
-        <div class="hero-meta-item">
-          <span class="label">Use</span>
-          <p>Reference for hiring panels, role architecture, capability matrices, and the quiet work of writing job descriptions.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise(function(resolve, reject) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy') ? resolve() : reject(); }
+    catch (e) { reject(e); }
+    document.body.removeChild(ta);
+  });
+}
 
-  <!-- ===================== COUNTER STRIP ===================== -->
-  <section class="counter-strip">
-    <div class="counter-grid">
-      <div class="counter-item">
-        <div class="counter-num">14</div>
-        <div class="counter-label">Software Engineering</div>
-        <div class="counter-sub">servers, services, screens</div>
-      </div>
-      <div class="counter-item">
-        <div class="counter-num">22</div>
-        <div class="counter-label">AI / Machine Learning</div>
-        <div class="counter-sub">models, pipelines, agents</div>
-      </div>
-      <div class="counter-item">
-        <div class="counter-num">19</div>
-        <div class="counter-label">SAP</div>
-        <div class="counter-sub">modules, motions, mandates</div>
-      </div>
-      <div class="counter-item">
-        <div class="counter-num">42</div>
-        <div class="counter-label">Universal / Platform</div>
-        <div class="counter-sub">access, automation, admin</div>
-      </div>
-    </div>
-  </section>
+function render() {
+  var root = document.getElementById('sections');
+  var html = '';
 
-  <!-- ===================== FIELD NOTE ===================== -->
-  <section class="field-note">
-    <div class="field-note-inner">
-      <p>“A role is not a person — it is a shape a person agrees to take. Catalogue the shapes first; the people will arrive in their own time.”</p>
-      <div class="attr">— Field note, undated</div>
-    </div>
-  </section>
+  CATEGORIES.forEach(function(cat) {
+    html += '<section id="' + cat.id + '">';
+    html += '<h2>' + cat.title + '</h2>';
+    html += '<div class="count">' + cat.roles.length + ' roles</div>';
+    html += '<table><thead><tr><th>#</th><th>Role</th><th></th></tr></thead><tbody>';
 
-  <!-- ===================== 01 — SOFTWARE ENGINEERING ===================== -->
-  <section class="category" id="software">
-    <div class="category-inner">
-      <div class="sticky-pair">
-        <div class="sticky-left">
-          <span class="cat-number">— 01</span>
-          <h2 class="cat-title fade-up">
-            Software <span class="italic">Engineering</span>
-          </h2>
-          <p class="cat-desc fade-up">Foundational craft — the engineers who write the servers, the services, and the screens. Polyglots and specialists; full-stack and backend-leaning; .NET and Java; React and Angular. The discipline from which all others branch.</p>
-          <div class="cat-stat fade-up">
-            <span class="cat-stat-num">14</span>
-            <span class="cat-stat-label">Roles<br>catalogued</span>
-          </div>
-          <p class="cat-aside fade-up">Titles here range from the broad (“Software Engineer”) to the platform-specific (“ASP.NET Core Developer”). Both belong; the broad title implies the specific, the specific earns the broad.</p>
-        </div>
+    cat.roles.forEach(function(role, i) {
+      var num = String(i + 1).padStart(2, '0');
+      html += '<tr>';
+      html += '<td class="num">' + num + '</td>';
+      html += '<td class="role-name">' + role + '</td>';
+      html += '<td class="copy"><button type="button" class="copy-btn" data-role="' + role.replace(/"/g, '&quot;') + '">copy</button></td>';
+      html += '</tr>';
+    });
 
-        <div class="role-list">
-          <div class="role-list-header">
-            <span>No.</span>
-            <span>Role</span>
-            <span>copy</span>
-          </div>
+    html += '</tbody></table></section>';
+  });
 
-          <div class="role-item fade-in">
-            <span class="role-num">01</span>
-            <span class="role-name">.NET Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">02</span>
-            <span class="role-name">C# Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">03</span>
-            <span class="role-name">ASP.NET Core Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">04</span>
-            <span class="role-name">Software Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">05</span>
-            <span class="role-name">Backend Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">06</span>
-            <span class="role-name">Full Stack Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">07</span>
-            <span class="role-name">Full Stack Developer (React / Angular + Backend)</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">08</span>
-            <span class="role-name">Frontend Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">09</span>
-            <span class="role-name">UI Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">10</span>
-            <span class="role-name">Java Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">11</span>
-            <span class="role-name">Backend Java Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">12</span>
-            <span class="role-name">Spring Boot Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">13</span>
-            <span class="role-name">React Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">14</span>
-            <span class="role-name">Angular Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  root.innerHTML = html;
 
-  <!-- ===================== 02 — AI ENGINEERING ===================== -->
-  <section class="category" id="ai">
-    <div class="category-inner">
-      <div class="sticky-pair">
-        <div class="sticky-left">
-          <span class="cat-number">— 02</span>
-          <h2 class="cat-title fade-up">
-            AI <span class="italic">Engineering</span>
-          </h2>
-          <p class="cat-desc fade-up">Learning systems — models, pipelines, agents. From research scientists who publish, to MLOps engineers who ship, to LLM engineers who tune prompts for a living. Twenty-two titles, one frontier.</p>
-          <div class="cat-stat fade-up">
-            <span class="cat-stat-num">22</span>
-            <span class="cat-stat-label">Roles<br>catalogued</span>
-          </div>
-          <p class="cat-aside fade-up">“Agentic AI Engineer” leads the list — a title that did not exist in mainstream job boards three years ago. Its placement at the head of the index is itself a small piece of history.</p>
-        </div>
-
-        <div class="role-list">
-          <div class="role-list-header">
-            <span>No.</span>
-            <span>Role</span>
-            <span>copy</span>
-          </div>
-
-          <div class="role-item leading fade-in">
-            <span class="role-num"><span class="role-num-text"></span></span>
-            <span class="role-name">Agentic AI Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">01</span>
-            <span class="role-name">AI Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">02</span>
-            <span class="role-name">AI Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">03</span>
-            <span class="role-name">Generative AI Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">04</span>
-            <span class="role-name">LLM Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">05</span>
-            <span class="role-name">Applied AI Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">06</span>
-            <span class="role-name">AI Systems Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">07</span>
-            <span class="role-name">Machine Learning Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">08</span>
-            <span class="role-name">Software Engineer (AI/ML)</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">09</span>
-            <span class="role-name">Applied Data Scientist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">10</span>
-            <span class="role-name">Data Scientist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">11</span>
-            <span class="role-name">Research Scientist (AI/ML)</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">12</span>
-            <span class="role-name">NLP Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">13</span>
-            <span class="role-name">Computer Vision Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">14</span>
-            <span class="role-name">Deep Learning Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">15</span>
-            <span class="role-name">AI Solutions Architect</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">16</span>
-            <span class="role-name">AI Infrastructure Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">17</span>
-            <span class="role-name">MLOps Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">18</span>
-            <span class="role-name">ML Platform Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">19</span>
-            <span class="role-name">Data Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">20</span>
-            <span class="role-name">Analytics Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">21</span>
-            <span class="role-name">Business Intelligence Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== 03 — SAP ===================== -->
-  <section class="category" id="sap">
-    <div class="category-inner">
-      <div class="sticky-pair">
-        <div class="sticky-left">
-          <span class="cat-number">— 03</span>
-          <h2 class="cat-title fade-up">
-            The SAP <span class="italic">Discipline</span>
-          </h2>
-          <p class="cat-desc fade-up">The enterprise ledger — modules, motions, mandates. From FICO consultants who close the books, to Basis administrators who keep the lights on, to S/4HANA consultants navigating the greenfield. Nineteen titles, one ecosystem.</p>
-          <div class="cat-stat fade-up">
-            <span class="cat-stat-num">19</span>
-            <span class="cat-stat-label">Roles<br>catalogued</span>
-          </div>
-          <p class="cat-aside fade-up">SAP titles follow a grammar: module abbreviation + role suffix. FICO, MM, SD, PP, PM, QM, TM — each three-letter code conceals a sub-discipline with its own certifications, conferences, and greybeards.</p>
-        </div>
-
-        <div class="role-list">
-          <div class="role-list-header">
-            <span>No.</span>
-            <span>Role</span>
-            <span>copy</span>
-          </div>
-
-          <div class="role-item leading fade-in">
-            <span class="role-num"><span class="role-num-text"></span></span>
-            <span class="role-name">SAP FICO Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">01</span>
-            <span class="role-name">SAP ABAP Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">02</span>
-            <span class="role-name">SAP SuccessFactors Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">03</span>
-            <span class="role-name">SAP S/4HANA Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">04</span>
-            <span class="role-name">SAP MM Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">05</span>
-            <span class="role-name">SAP SD Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">06</span>
-            <span class="role-name">SAP Basis Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">07</span>
-            <span class="role-name">SAP Security Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">08</span>
-            <span class="role-name">SAP GRC Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">09</span>
-            <span class="role-name">SAP HANA Developer / Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">10</span>
-            <span class="role-name">SAP BW/BI Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">11</span>
-            <span class="role-name">SAP Integration Consultant (PI/PO, CPI)</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">12</span>
-            <span class="role-name">SAP Ariba Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">13</span>
-            <span class="role-name">SAP PP Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">14</span>
-            <span class="role-name">SAP PM Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">15</span>
-            <span class="role-name">SAP Payroll Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">16</span>
-            <span class="role-name">SAP TM (Transportation Management) Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">17</span>
-            <span class="role-name">SAP QM (Quality Management) Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">18</span>
-            <span class="role-name">SAP Analytics Cloud (SAC) Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== 04 — UNIVERSAL / PLATFORM ===================== -->
-  <section class="category" id="universal">
-    <div class="category-inner">
-      <div class="sticky-pair">
-        <div class="sticky-left">
-          <span class="cat-number">— 04</span>
-          <h2 class="cat-title fade-up">
-            Universal <span class="italic">&amp; Platform</span>
-          </h2>
-          <p class="cat-desc fade-up">Where systems are governed — access, automation, administration. Help desk and IAM; Salesforce in fifteen of its suits; ServiceNow, RPA, low-code, no-code. Forty-two titles; the longest shelf in the library.</p>
-          <div class="cat-stat fade-up">
-            <span class="cat-stat-num">42</span>
-            <span class="cat-stat-label">Roles<br>catalogued</span>
-          </div>
-          <p class="cat-aside fade-up">Salesforce alone accounts for fifteen titles here — a discipline within a discipline, with its own architects, release managers, and security administrators. The platform has become a continent.</p>
-        </div>
-
-        <div class="role-list">
-          <div class="role-list-header">
-            <span>No.</span>
-            <span>Role</span>
-            <span>copy</span>
-          </div>
-
-          <div class="role-item fade-in">
-            <span class="role-num">01</span>
-            <span class="role-name">IT Support Specialist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">02</span>
-            <span class="role-name">Service Desk Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">03</span>
-            <span class="role-name">Help Desk Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">04</span>
-            <span class="role-name">System Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">05</span>
-            <span class="role-name">Application Support Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">06</span>
-            <span class="role-name">Production Support Engineer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">07</span>
-            <span class="role-name">Incident Management Specialist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">08</span>
-            <span class="role-name">Microsoft 365 Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">09</span>
-            <span class="role-name">Active Directory Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">10</span>
-            <span class="role-name">Cloud Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">11</span>
-            <span class="role-name">Security Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">12</span>
-            <span class="role-name">IAM Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">13</span>
-            <span class="role-name">Salesforce Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">14</span>
-            <span class="role-name">Salesforce Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">15</span>
-            <span class="role-name">Salesforce Platform Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">16</span>
-            <span class="role-name">ServiceNow Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">17</span>
-            <span class="role-name">Workflow Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">18</span>
-            <span class="role-name">Business Process Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">19</span>
-            <span class="role-name">Integration Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">20</span>
-            <span class="role-name">RPA Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">21</span>
-            <span class="role-name">RPA Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">22</span>
-            <span class="role-name">Platform Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">23</span>
-            <span class="role-name">Salesforce Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">24</span>
-            <span class="role-name">Salesforce Business Analyst</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">25</span>
-            <span class="role-name">Salesforce CPQ Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">26</span>
-            <span class="role-name">Salesforce Service Cloud Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">27</span>
-            <span class="role-name">Salesforce Sales Cloud Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">28</span>
-            <span class="role-name">Salesforce Marketing Cloud Specialist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">29</span>
-            <span class="role-name">Salesforce Field Service Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">30</span>
-            <span class="role-name">Salesforce Industries Consultant (Vlocity / OmniStudio)</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">31</span>
-            <span class="role-name">Google Workspace Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">32</span>
-            <span class="role-name">BI Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">33</span>
-            <span class="role-name">Data Operations Specialist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">34</span>
-            <span class="role-name">Automation Specialist</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">35</span>
-            <span class="role-name">Low-Code Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">36</span>
-            <span class="role-name">No-Code Developer</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">37</span>
-            <span class="role-name">Salesforce Architect</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">38</span>
-            <span class="role-name">Solution Architect</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">39</span>
-            <span class="role-name">GRC Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">40</span>
-            <span class="role-name">Salesforce Security Administrator</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">41</span>
-            <span class="role-name">Salesforce Release Manager</span>
-            <span class="role-arrow">→</span>
-          </div>
-          <div class="role-item fade-in">
-            <span class="role-num">42</span>
-            <span class="role-name">Salesforce Data Cloud Consultant</span>
-            <span class="role-arrow">→</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== FOOTER ===================== -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div class="footer-title">
-          Ninety-seven shapes a person can agree to take — catalogued, indexed, and left here for the next hiring panel to read.
-        </div>
-        <div class="footer-col">
-          <h4>Disciplines</h4>
-          <ul>
-            <li>01 — Software Engineering</li>
-            <li>02 — AI Engineering</li>
-            <li>03 — SAP</li>
-            <li>04 — Universal / Platform</li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Index</h4>
-          <ul>
-            <li>Total roles — 97</li>
-            <li>Categories — 4</li>
-            <li>Volume — I</li>
-            <li>Compiled — 2025</li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>Role Atlas · Vol. I · 2025</span>
-        <span class="mark">— preserved verbatim, organised by domain.</span>
-        <span>※ End of index</span>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // ---- Line-mask hero reveal ----
-    (function() {
-      const lines = document.querySelectorAll('.hero-title .line');
-      lines.forEach((el, i) => {
-        el.style.transition = 'transform 1100ms cubic-bezier(.22, 1, .36, 1)';
-        el.style.transitionDelay = (i * 140) + 'ms';
-      });
-      window.addEventListener('load', () => {
-        requestAnimationFrame(() => {
-          lines.forEach(el => { el.style.transform = 'translateY(0)'; });
-        });
-      });
-    })();
-
-    // ---- Intersection observer for fade-up + role stagger ----
-    (function() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-in');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-      // Observe headings, descriptions, stats
-      document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-      // Observe role items with stagger within each list
-      document.querySelectorAll('.role-list').forEach(list => {
-        const items = list.querySelectorAll('.role-item.fade-in');
-        items.forEach((item, i) => {
-          item.style.transitionDelay = Math.min(i * 55, 900) + 'ms';
-          observer.observe(item);
-        });
-      });
-    })();
-
-    // ---- Role copy buttons ----
-    (function() {
-      function copyText(text) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          return navigator.clipboard.writeText(text);
-        }
-        return new Promise(function(resolve, reject) {
-          var ta = document.createElement('textarea');
-          ta.value = text;
-          ta.setAttribute('readonly', '');
-          ta.style.position = 'fixed';
-          ta.style.left = '-9999px';
-          document.body.appendChild(ta);
-          ta.select();
-          try {
-            document.execCommand('copy') ? resolve() : reject();
-          } catch (err) {
-            reject(err);
-          }
-          document.body.removeChild(ta);
-        });
-      }
-
-      function markCopied(btn) {
-        var original = btn.textContent;
+  root.querySelectorAll('.copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var role = btn.getAttribute('data-role');
+      var label = 'copy';
+      copyText(role).then(function() {
         btn.textContent = 'copied';
-        btn.classList.add('copied');
-        window.setTimeout(function() {
-          btn.textContent = original;
-          btn.classList.remove('copied');
-        }, 1400);
-      }
-
-      document.querySelectorAll('.role-item').forEach(function(item) {
-        var nameEl = item.querySelector('.role-name');
-        if (!nameEl) return;
-
-        var roleName = nameEl.textContent.trim();
-        var arrow = item.querySelector('.role-arrow');
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'role-copy-btn';
-        btn.textContent = 'copy';
-        btn.setAttribute('aria-label', 'Copy role: ' + roleName);
-
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          copyText(roleName).then(function() {
-            markCopied(btn);
-          }).catch(function() {
-            btn.textContent = 'Failed';
-            window.setTimeout(function() { btn.textContent = 'copy'; }, 1400);
-          });
-        });
-
-        if (arrow) arrow.replaceWith(btn);
-        else item.appendChild(btn);
-      });
-    })();
-
-    // ---- Smooth anchor scroll w/ offset for fixed nav ----
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const targetId = link.getAttribute('href');
-        const target = document.querySelector(targetId);
-        if (target) {
-          e.preventDefault();
-          const offset = 80;
-          const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-          window.scrollTo({ top, behavior: 'smooth' });
-        }
+        setTimeout(function() { btn.textContent = label; }, 1200);
+      }).catch(function() {
+        btn.textContent = 'fail';
+        setTimeout(function() { btn.textContent = label; }, 1200);
       });
     });
-  </script>
+  });
+}
+
+render();
+</script>
 </body>
 </html>
