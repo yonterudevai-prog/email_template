@@ -6,227 +6,724 @@
 <title>Role Atlas</title>
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: Arial, sans-serif; font-size: 14px; color: #222; background: #fff; }
+  body { margin: 0; font-family: Arial, sans-serif; font-size: 15px; color: #222; background: #eceff1; }
   .layout { display: flex; min-height: 100vh; }
-  .sidebar { width: 200px; padding: 16px; border-right: 1px solid #ddd; background: #fafafa; flex-shrink: 0; }
-  .sidebar h1 { font-size: 16px; margin: 0 0 12px; }
-  .sidebar a { display: block; padding: 6px 0; color: #333; text-decoration: none; }
-  .sidebar a:hover { text-decoration: underline; }
-  .main { flex: 1; padding: 16px 20px; overflow-x: auto; }
-  .main > p { color: #666; margin: 0 0 20px; }
-  section { margin-bottom: 32px; }
-  section h2 { font-size: 18px; margin: 0 0 4px; }
-  section .count { color: #888; font-size: 12px; margin-bottom: 10px; }
+
+  /* ---- LEFT SIDEBAR (lavender) ---- */
+  .sidebar {
+    width: 220px;
+    padding: 14px;
+    border-right: 2px solid #b39ddb;
+    background: #ede7f6;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .sidebar h1 { font-size: 16px; margin: 0 0 10px; color: #4527a0; font-weight: bold; }
+  .sidebar h2 { font-size: 14px; margin: 16px 0 6px; color: #5e35b1; font-weight: bold; }
+  .sidebar a.nav-link {
+    display: block;
+    padding: 6px 8px;
+    margin-bottom: 3px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+    font-weight: bold;
+  }
+  .sidebar a.nav-link:hover { text-decoration: none; opacity: 0.85; }
+  .nav-software { color: #1565c0 !important; background: #e3f2fd; border-left-color: #1565c0 !important; }
+  .nav-ai       { color: #6a1b9a !important; background: #f3e5f5; border-left-color: #6a1b9a !important; }
+  .nav-sap      { color: #e65100 !important; background: #fff3e0; border-left-color: #e65100 !important; }
+  .nav-universal{ color: #00695c !important; background: #e0f2f1; border-left-color: #00695c !important; }
+
+  .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
+  .portal-grid a {
+    display: block;
+    padding: 7px 4px;
+    font-size: 12px;
+    text-align: center;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: opacity 0.15s;
+  }
+  .portal-grid a:hover { opacity: 0.75; transform: scale(1.02); }
+  .portal-tier-label {
+    font-size: 11px;
+    font-weight: bold;
+    margin: 10px 0 5px;
+    padding: 4px 7px;
+    border-radius: 4px;
+    line-height: 1.3;
+  }
+  .portal-tier-label:first-child { margin-top: 0; }
+  .portal-tier-label.p1 { background: #fff3e0; color: #e65100; border: 1px solid #ffb74d; }
+  .portal-tier-label.p2 { background: #e3f2fd; color: #0d47a1; border: 1px solid #64b5f6; }
+  .portal-tier-label.p3 { background: #f5f5f5; color: #555; border: 1px solid #ddd; }
+  .sidebar .portal-note { font-size: 11px; color: #5e35b1; margin: 0 0 6px; line-height: 1.35; }
+  .portal-p1 {
+    background: #fff8e1 !important;
+    border: 2px solid #ffa000 !important;
+    color: #e65100 !important;
+    grid-column: 1 / -1;
+    font-size: 13px;
+    padding: 9px 4px;
+  }
+  .portal-p2 {
+    background: #e3f2fd !important;
+    border: 2px solid #42a5f5 !important;
+    color: #0d47a1 !important;
+  }
+  .portal-p2.ai { background: #f3e5f5 !important; border-color: #ab47bc !important; color: #6a1b9a !important; }
+  .portal-c0 { background: #e0f2f1; border-color: #4db6ac; color: #004d40; }
+  .portal-c1 { background: #fce4ec; border-color: #f06292; color: #880e4f; }
+  .portal-c2 { background: #fff9c4; border-color: #fff176; color: #f57f17; }
+  .portal-c3 { background: #e8eaf6; border-color: #7986cb; color: #1a237e; }
+  .portal-c4 { background: #f1f8e9; border-color: #aed581; color: #33691e; }
+  .portal-c5 { background: #fff3e0; border-color: #ffb74d; color: #e65100; }
+  .portal-c6 { background: #f3e5f5; border-color: #ba68c8; color: #4a148c; }
+  .portal-c7 { background: #e3f2fd; border-color: #64b5f6; color: #0d47a1; }
+
+  /* ---- CENTER (cream + per-category sections) ---- */
+  .main {
+    flex: 1;
+    padding: 10px 12px;
+    overflow-x: auto;
+    min-width: 0;
+    max-width: 520px;
+    background: #fffde7;
+    border-right: 2px solid #ffe082;
+  }
+  .main > p { color: #795548; margin: 0 0 10px; font-size: 13px; font-weight: bold; }
+
+  section { margin-bottom: 16px; padding: 10px; border-radius: 6px; border: 1px solid; }
+  section h2 { font-size: 16px; margin: 0 0 2px; font-weight: bold; }
+  section .count { font-size: 12px; margin-bottom: 6px; opacity: 0.75; }
+
+  .cat-software  { background: #e3f2fd; border-color: #90caf9; }
+  .cat-software h2 { color: #0d47a1; }
+  .cat-software th { background: #bbdefb; color: #0d47a1; }
+  .cat-software .copy-btn { background: #bbdefb; border-color: #64b5f6; color: #0d47a1; }
+
+  .cat-ai { background: #f3e5f5; border-color: #ce93d8; }
+  .cat-ai h2 { color: #4a148c; }
+  .cat-ai th { background: #e1bee7; color: #4a148c; }
+  .cat-ai .copy-btn { background: #e1bee7; border-color: #ba68c8; color: #4a148c; }
+
+  .cat-sap { background: #fff3e0; border-color: #ffcc80; }
+  .cat-sap h2 { color: #e65100; }
+  .cat-sap th { background: #ffe0b2; color: #bf360c; }
+  .cat-sap .copy-btn { background: #ffe0b2; border-color: #ffb74d; color: #e65100; }
+
+  .cat-universal { background: #e0f2f1; border-color: #80cbc4; }
+  .cat-universal h2 { color: #004d40; }
+  .cat-universal th { background: #b2dfdb; color: #004d40; }
+  .cat-universal .copy-btn { background: #b2dfdb; border-color: #4db6ac; color: #00695c; }
+
+  section table { background: rgba(255,255,255,0.65); border-radius: 4px; overflow: hidden; }
+  section td { background: rgba(255,255,255,0.5); }
   table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
-  th { font-size: 12px; color: #666; font-weight: normal; background: #f5f5f5; }
-  td.num { width: 40px; color: #888; }
-  td.copy { width: 50px; text-align: right; }
-  .copy-btn { background: none; border: none; color: #0066cc; cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
-  .copy-btn:hover { color: #004499; }
-  @media (max-width: 700px) {
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: middle; font-size: 14px; line-height: 1.35; }
+  th { font-size: 12px; color: #666; font-weight: normal; background: #f5f5f5; padding: 5px 6px; }
+  td.num { width: 28px; color: #888; font-size: 13px; }
+  td.copy { width: 52px; text-align: right; }
+  .copy-btn {
+    background: #e8f0fe;
+    border: 1px solid #90caf9;
+    color: #1565c0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+  .copy-btn:hover { background: #bbdefb; }
+
+  /* ---- RIGHT PANELS (dual) ---- */
+  .right-columns {
+    display: flex;
+    flex-shrink: 0;
+    align-self: flex-start;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+  }
+  .right-panel {
+    width: 330px;
+    padding: 16px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    max-height: 100vh;
+    font-size: 15px;
+    border-left: 2px solid;
+  }
+  .guide-panel {
+    background: #e8eaf6;
+    border-left-color: #5c6bc0 !important;
+  }
+  .search-panel {
+    background: #e8f5e9;
+    border-left-color: #43a047 !important;
+  }
+  .right-panel h2 { font-size: 22px; margin: 0 0 10px; font-weight: bold; line-height: 1.15; letter-spacing: -0.02em; }
+  .right-panel.guide-panel h2 { color: #283593; }
+  .right-panel.search-panel h2 { color: #1b5e20; }
+  .right-panel .sub { font-size: 13px; color: #555; margin-bottom: 14px; line-height: 1.5; }
+  .right-panel h3 { font-size: 16px; margin: 16px 0 8px; font-weight: bold; border-bottom: 1px solid; padding-bottom: 5px; }
+  .guide-panel h3 { color: #283593; border-bottom-color: #9fa8da; }
+  .search-panel h3 { color: #1b5e20; border-bottom-color: #a5d6a7; }
+
+  .q-card {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    border-left: 4px solid #ccc;
+    background: #fff;
+    line-height: 1.5;
+  }
+  .q-card .q-en { font-size: 14px; color: #222; margin-bottom: 4px; font-style: italic; }
+  .q-card .q-te { font-size: 13px; color: #555; margin-bottom: 5px; }
+  .q-card .q-ans { font-size: 15px; font-weight: bold; }
+  .q-card.yes  { border-left-color: #2e7d32; background: #f1f8f1; }
+  .q-card.yes  .q-ans { color: #2e7d32; }
+  .q-card.no   { border-left-color: #c62828; background: #fdf3f3; }
+  .q-card.no   .q-ans { color: #c62828; }
+  .q-card.info { border-left-color: #1565c0; background: #f0f4ff; }
+  .q-card.info .q-ans { color: #1565c0; }
+
+  .demo-card {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    background: #fff8e8;
+    border: 1px solid #ffe082;
+  }
+  .demo-card .sym { font-size: 22px; margin-right: 8px; }
+  .demo-card .lbl { font-size: 13px; color: #555; }
+  .demo-card .val { font-size: 14px; font-weight: bold; color: #e65100; font-style: italic; line-height: 1.4; }
+  .demo-card .te  { font-size: 13px; color: #666; margin-top: 4px; line-height: 1.45; }
+  .demo-card .synonyms { margin-top: 6px; font-size: 12px; line-height: 1.5; color: #444; }
+  .demo-card .synonyms strong { color: #333; font-size: 12px; }
+  .demo-card .syn-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .demo-card .syn { font-size: 11px; padding: 2px 7px; border-radius: 10px; background: #fff; border: 1px solid #ddd; color: #555; }
+  .demo-card .syn.pick { background: #e8f5e9; border-color: #66bb6a; color: #2e7d32; font-weight: bold; }
+  .demo-card .syn.alt { background: #fce4ec; border-color: #f48fb1; color: #c2185b; font-weight: bold; }
+  .demo-card .explain { font-size: 12px; color: #555; margin-top: 5px; padding: 5px 7px; background: #fff; border-radius: 3px; border: 1px dashed #ccc; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag { font-size: 13px; padding: 4px 10px; border-radius: 12px; font-weight: bold; }
+  .tag-green  { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .tag-red    { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+  .tag-blue   { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+  .tag-orange { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  .tag-purple { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+  .tag-pink    { background: #fce4ec; color: #c2185b; border: 1px solid #f48fb1; }
+
+  .job-type { font-size: 14px; padding: 8px 10px; margin-bottom: 6px; border-radius: 4px; line-height: 1.45; border: 1px solid; }
+  .job-type strong { font-size: 14px; }
+  .job-type span { display: block; font-size: 13px; color: #666; margin-top: 3px; }
+  .guide-panel .job-type { border: 1px solid; }
+  .guide-panel .job-type strong { font-size: 14px; }
+  .guide-panel .jt-w2      { background: #e8f5e9; border-color: #81c784; }
+  .guide-panel .jt-w2 strong { color: #2e7d32; }
+  .guide-panel .jt-fte     { background: #e3f2fd; border-color: #64b5f6; }
+  .guide-panel .jt-fte strong { color: #1565c0; }
+  .guide-panel .jt-contract{ background: #fff3e0; border-color: #ffb74d; }
+  .guide-panel .jt-contract strong { color: #e65100; }
+  .guide-panel .jt-c2c     { background: #f3e5f5; border-color: #ba68c8; }
+  .guide-panel .jt-c2c strong { color: #6a1b9a; }
+  .guide-panel .jt-1099    { background: #fce4ec; border-color: #f06292; }
+  .guide-panel .jt-1099 strong { color: #c2185b; }
+  .search-panel .job-indeed  { background: #e3f2fd; border-color: #64b5f6; }
+  .search-panel .job-indeed  strong { color: #1565c0; }
+  .search-panel .job-linkedin { background: #e8eaf6; border-color: #7986cb; }
+  .search-panel .job-linkedin strong { color: #283593; }
+  .search-panel .job-dice     { background: #fce4ec; border-color: #f06292; }
+  .search-panel .job-dice     strong { color: #c2185b; }
+  .search-panel .job-zip     { background: #fff3e0; border-color: #ffb74d; }
+  .search-panel .job-zip     strong { color: #e65100; }
+
+  .tip-card {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: 5px;
+    line-height: 1.5;
+    border: 1px solid;
+    border-left-width: 4px;
+  }
+  .tip-card strong { font-size: 14px; display: block; margin-bottom: 3px; }
+  .tip-card span { font-size: 13px; color: #444; display: block; }
+  .tip-card em { font-size: 13px; color: #666; display: block; margin-top: 4px; font-style: normal; }
+  .search-panel .tip-step1 { background: #e3f2fd; border-color: #64b5f6; border-left-color: #1565c0; }
+  .search-panel .tip-step1 strong { color: #1565c0; }
+  .search-panel .tip-step2 { background: #f3e5f5; border-color: #ce93d8; border-left-color: #7b1fa2; }
+  .search-panel .tip-step2 strong { color: #6a1b9a; }
+  .search-panel .tip-step3 { background: #fff8e1; border-color: #ffe082; border-left-color: #f9a825; }
+  .search-panel .tip-step3 strong { color: #f57f17; }
+  .search-panel .tip-step4 { background: #e0f2f1; border-color: #80cbc4; border-left-color: #00897b; }
+  .search-panel .tip-step4 strong { color: #00695c; }
+  .search-panel .tip-step5 { background: #fce4ec; border-color: #f48fb1; border-left-color: #c2185b; }
+  .search-panel .tip-step5 strong { color: #ad1457; }
+  .search-panel .tip-step6 { background: #e8eaf6; border-color: #9fa8da; border-left-color: #3949ab; }
+  .search-panel .tip-step6 strong { color: #283593; }
+  .search-panel .tip-call { background: #f1f8e9; border-color: #aed581; border-left-color: #689f38; }
+  .search-panel .tip-call strong { color: #33691e; }
+
+  /* Job Search — red highlights for critical info */
+  .search-panel .imp { color: #c62828; font-weight: bold; }
+  .search-panel .loc-val {
+    color: #b71c1c;
+    font-weight: bold;
+    background: #ffcdd2;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #ef5350;
+    white-space: nowrap;
+  }
+  .search-panel .tip-important {
+    background: #ffebee;
+    border-color: #ef5350;
+    border-left-color: #c62828;
+    border-left-width: 5px;
+  }
+  .search-panel .tip-important strong { color: #b71c1c; }
+  .search-panel .tip-warn {
+    background: #fff3f3;
+    border-color: #e57373;
+    border-left-color: #d32f2f;
+    border-left-width: 5px;
+  }
+  .search-panel .tip-warn strong { color: #c62828; }
+  .search-panel .warn-note {
+    display: block;
+    font-size: 13px;
+    color: #c62828;
+    font-weight: bold;
+    margin-top: 4px;
+    background: #ffebee;
+    padding: 4px 6px;
+    border-radius: 3px;
+    border: 1px dashed #ef5350;
+  }
+
+  .steps { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.65; color: #333; }
+  .steps li { margin-bottom: 6px; }
+
+  @media (max-width: 1400px) {
+    .right-panel { width: 290px; }
+  }
+  @media (max-width: 1100px) {
+    .right-columns { flex-direction: column; max-height: none; position: static; width: 100%; }
+    .right-panel { width: 100%; max-height: none; border-right: none; border-bottom: 1px solid #ddd; }
+  }
+  @media (max-width: 900px) {
     .layout { flex-direction: column; }
-    .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
-    .sidebar a { display: inline-block; margin-right: 16px; }
+    .sidebar, .right-columns { width: 100%; border: none; border-bottom: 1px solid #ddd; position: static; max-height: none; }
+    .right-panel { width: 100%; max-height: none; }
+    .portal-grid { grid-template-columns: repeat(4, 1fr); }
   }
 </style>
 </head>
 <body>
 <div class="layout">
+
+  <!-- LEFT -->
   <aside class="sidebar">
     <h1>Role Atlas</h1>
-    <a href="#software">Software (14)</a>
-    <a href="#ai">AI / ML (22)</a>
-    <a href="#sap">SAP (19)</a>
-    <a href="#universal">Universal (42)</a>
+    <a class="nav-link nav-software" href="#software">Software (14)</a>
+    <a class="nav-link nav-ai" href="#ai">AI / ML (22)</a>
+    <a class="nav-link nav-sap" href="#sap">SAP (19)</a>
+    <a class="nav-link nav-universal" href="#universal">Universal (42)</a>
+    <h2>USA Job Portals</h2>
+    <p class="portal-note">Priority order ↓ check top portals first every day</p>
+    <div id="portalGrid"></div>
   </aside>
-  <main>
+
+  <!-- CENTER -->
+  <main class="main">
     <p>97 roles · click <em>copy</em> to copy any title</p>
     <div id="sections"></div>
   </main>
+
+  <!-- RIGHT — Dual panels -->
+  <div class="right-columns">
+
+  <aside class="right-panel guide-panel" id="guide">
+    <h2>🇺🇸 Application Guide</h2>
+    <p class="sub">Indian student · English + Telugu · Color = answer type</p>
+
+    <div class="tag-row">
+      <span class="tag tag-green">✅ Yes</span>
+      <span class="tag tag-red">❌ No</span>
+      <span class="tag tag-blue">ℹ️ Info</span>
+    </div>
+
+    <h3>1 · Common Questions</h3>
+    <p class="sub">Exact wording as shown on job portals (Workday, Greenhouse, Indeed, etc.)</p>
+
+    <div class="q-card yes">
+      <div class="q-en">"Are you legally authorized to work in the United States?"</div>
+      <div class="q-te">అమెరికా United States లో చట్టపరంగా పని చేయడానికి అర్హత ఉందా? — అవును (EAD / OPT / GC / Citizen)</div>
+      <div class="q-ans">✅ Yes</div>
+    </div>
+    <div class="q-card no">
+      <div class="q-en">"Will you now or in the future require sponsorship for employment visa status (e.g., H-1B visa status)?"</div>
+      <div class="q-te">ఇప్పుడు లేదా భవిష్యత్తులో H-1B visa sponsorship అవసరమా? — లేదు (OPT STEM extension ఉnte)</div>
+      <div class="q-ans">❌ No</div>
+    </div>
+    <div class="q-card no">
+      <div class="q-en">"Do you have a disability, or have you had a disability in the past?"</div>
+      <div class="q-te">వికలాంగత ఉందా? — లేదు · లేదా "I do not want to answer" / "Decline to self-identify"</div>
+      <div class="q-ans">❌ No</div>
+    </div>
+    <div class="q-card no">
+      <div class="q-en">"Are you a protected veteran?" / "Are you a veteran of the U.S. Armed Forces?"</div>
+      <div class="q-te">US military (Army/Navy/Air Force/Marines) లో serve chesara? Indian student — service ledu — <strong>No</strong></div>
+      <div class="q-ans">❌ No — "I am not a protected veteran"</div>
+    </div>
+    <div class="q-card no">
+      <div class="q-en">"Do you have any relatives currently employed by this company?"</div>
+      <div class="q-te">ఈ company లో బంధuvulu / relatives పని చేస్తున్నారా? — లేదు</div>
+      <div class="q-ans">❌ No</div>
+    </div>
+    <div class="q-card no">
+      <div class="q-en">"Have you ever worked for this company before?" / "Have you previously been employed by us?"</div>
+      <div class="q-te">ఈ company లో ముందు employed ga unnara? — లేదు</div>
+      <div class="q-ans">❌ No</div>
+    </div>
+    <div class="q-card yes">
+      <div class="q-en">"Are you willing to relocate if required for this position?"</div>
+      <div class="q-te">ఈ job kosam vere city/location ki relocate avvagalara? — అవును</div>
+      <div class="q-ans">✅ Yes</div>
+    </div>
+    <div class="q-card yes">
+      <div class="q-en">"Are you willing to travel as required for this position?"</div>
+      <div class="q-te">Job kosam travel cheyagalara? — అవును</div>
+      <div class="q-ans">✅ Yes</div>
+    </div>
+    <div class="q-card info">
+      <div class="q-en">"What are your salary expectations?" / "Desired compensation"</div>
+      <div class="q-te">Salary / compensation entha expect chestunnaru? — Negotiable / Market rate</div>
+      <div class="q-ans">ℹ️ Negotiable</div>
+    </div>
+    <div class="q-card info">
+      <div class="q-en">"What is your earliest available start date?" / "When can you start?"</div>
+      <div class="q-te">Eppudu join avvagalaru? — 2 weeks notice</div>
+      <div class="q-ans">ℹ️ 2 weeks from offer</div>
+    </div>
+    <div class="q-card no">
+      <div class="q-en">"Have you ever been convicted of a felony?"</div>
+      <div class="q-te">Felony crime ki conviction unda? — లేదు</div>
+      <div class="q-ans">❌ No</div>
+    </div>
+    <div class="q-card yes">
+      <div class="q-en">"Are you willing to submit to a background check and drug screening?"</div>
+      <div class="q-te">Background check mariyu drug test ki agree avtara? — అవును</div>
+      <div class="q-ans">✅ Yes</div>
+    </div>
+
+    <h3>2 · Demographics (EEO — optional)</h3>
+    <p class="sub">Exact form questions · Portals use different words — pick the option that matches you ↓</p>
+
+    <div class="demo-card">
+      <div class="val">"What is your gender?" / "Sex" / "Gender identity"</div>
+      <div class="synonyms"><strong>Form may show any of these words — same meaning:</strong></div>
+      <div class="syn-list">
+        <span class="syn pick">♂ Male</span>
+        <span class="syn pick">Man</span>
+        <span class="syn pick">M</span>
+        <span class="syn alt">♀ Female</span>
+        <span class="syn alt">Woman</span>
+        <span class="syn alt">F</span>
+        <span class="syn">Non-binary</span>
+        <span class="syn">Other</span>
+        <span class="syn">Prefer not to say</span>
+        <span class="syn">Decline to self-identify</span>
+      </div>
+      <div class="explain"><strong>♂ Male student</strong> → select <strong>Male</strong> / Man / M · <strong>♀ Female student</strong> → select <strong>Female</strong> / Woman / F · All three words mean the same on most forms.</div>
+      <div class="te">తెలుగు: Male unte → <strong>Male / Man / M</strong> select cheyandi · Female unte → <strong>Female / Woman / F</strong> · Portal lo word different ga unte kuda same option — mee gender ki match avvali</div>
+    </div>
+    <div class="demo-card">
+      <div class="val">"What is your sexual orientation?" / "How do you identify?"</div>
+      <div class="synonyms"><strong>Common synonyms on job portals (Workday, Greenhouse, iCIMS):</strong></div>
+      <div class="syn-list">
+        <span class="syn pick">⚤ Heterosexual</span>
+        <span class="syn pick">Straight</span>
+        <span class="syn pick">Heterosexual / Straight</span>
+        <span class="syn">Homosexual</span>
+        <span class="syn">Gay</span>
+        <span class="syn">Lesbian</span>
+        <span class="syn">Bisexual</span>
+        <span class="syn">Pansexual</span>
+        <span class="syn">Asexual</span>
+        <span class="syn">Prefer not to say</span>
+        <span class="syn">Decline to self-identify</span>
+        <span class="syn">I do not wish to answer</span>
+      </div>
+      <div class="explain"><strong>Heterosexual = Straight</strong> — opposite-gender attraction. If form shows both, pick either one. Typical for most Indian students: <strong>Heterosexual</strong> or <strong>Straight</strong>.</div>
+      <div class="te">తెలుగు: <strong>Heterosexual</strong> mariyu <strong>Straight</strong> rendu okate — form lo edaithe undi adi select cheyandi · "Prefer not to say" kuda safe option (optional section)</div>
+    </div>
+    <div class="demo-card">
+      <div class="val">"Please select the race/ethnicity with which you most closely identify."</div>
+      <div class="te">Select: <strong>🌏 Asian (Not Hispanic or Latino)</strong> · Indian students ki idi correct</div>
+    </div>
+    <div class="demo-card">
+      <div class="val">"Are you Hispanic or Latino?"</div>
+      <div class="te">Select: <strong>❌ No, I am not Hispanic or Latino</strong></div>
+    </div>
+    <div class="demo-card">
+      <div class="val">"What is your country of birth?" / Nationality</div>
+      <div class="te">Select/Enter: <strong>🇮🇳 India / Indian</strong></div>
+    </div>
+    <div class="demo-card">
+      <div class="val">"Are you a protected veteran?"</div>
+      <div class="te">Select: <strong>🎖️ I am not a protected veteran</strong> · US military service ledu</div>
+    </div>
+    <div class="demo-card">
+      <div class="val">"Do you have a disability?" (Voluntary Self-Identification)</div>
+      <div class="te">Select: <strong>🚫 No, I do not have a disability</strong> · or "I do not want to answer"</div>
+    </div>
+
+    <div class="tag-row" style="margin-top:8px">
+      <span class="tag tag-orange">♂ Male / Man / M</span>
+      <span class="tag tag-pink">♀ Female / Woman / F</span>
+      <span class="tag tag-orange">⚤ Heterosexual / Straight</span>
+      <span class="tag tag-purple">🌏 Asian</span>
+      <span class="tag tag-purple">🇮🇳 Indian</span>
+      <span class="tag tag-red">❌ Not Hispanic</span>
+    </div>
+
+    <h3>3 · Job Types (USA)</h3>
+    <div class="job-type jt-w2"><strong>W2</strong> — Employee on payroll · taxes cut · best for OPT/H1B<span>తెలుగు: company payroll, tax auto-cut</span></div>
+    <div class="job-type jt-fte"><strong>Full-Time (FTE)</strong> — 40 hrs/week · benefits<span>తెలుగు: permanent job + benefits</span></div>
+    <div class="job-type jt-contract"><strong>Contract</strong> — 3–12 months fixed term<span>తెలుగు: contract job, time limit untundi</span></div>
+    <div class="job-type jt-c2c"><strong>C2C</strong> — Your LLC bills client<span>తెలుగు: mee company dwara bill (GC/citizens)</span></div>
+    <div class="job-type jt-1099"><strong>1099</strong> — Independent contractor · self tax<span>తెలుగు: taxes meere pay cheyali</span></div>
+
+    <h3>4 · Hiring Steps</h3>
+    <ol class="steps">
+      <li>Apply on portal (Indeed/Dice)</li>
+      <li>Recruiter phone screen</li>
+      <li>Technical interview</li>
+      <li>Client interview</li>
+      <li>Offer letter (W2)</li>
+      <li>Background check (1–2 wks)</li>
+      <li>Onboarding — I-9, SSN, join</li>
+    </ol>
+
+    <h3>5 · Documents Ready</h3>
+    <ol class="steps">
+      <li>Resume (USA format, no photo)</li>
+      <li>Passport + I-94 + I-20</li>
+      <li>EAD card (OPT)</li>
+      <li>Degree certificates</li>
+      <li>SSN (after you get it)</li>
+      <li>2–3 references</li>
+    </ol>
+  </aside>
+
+  <aside class="right-panel search-panel" id="search-guide">
+    <h2>🔍 Job Search Guide</h2>
+    <p class="sub">Copy role from middle → search on left portal → apply filters below</p>
+    <p class="sub" style="margin-top:-8px;"><span class="imp">Red text</span> = important · <span class="loc-val">Red box</span> = exact value to type (no mistakes)</p>
+
+    <h3>1 · How to Search on Portals</h3>
+
+    <div class="tip-card tip-step1">
+      <strong>Step 1 — Search keyword</strong>
+      <span>Paste copied role title (e.g. ".NET Developer") in search box.</span>
+      <em>తెలుగు: middle nundi role copy chesi portal search lo paste cheyandi</em>
+    </div>
+    <div class="tip-card tip-warn tip-step2">
+      <strong>Step 2 — Location ⚠️ (easy to get wrong)</strong>
+      <span><strong>Geographic location:</strong> Type <span class="loc-val">United States</span> for nationwide — or exact city/state (e.g. <span class="loc-val">Dallas, TX</span> · <span class="loc-val">New Jersey</span> · <span class="loc-val">California</span>).</span>
+      <span><strong>Work mode filter:</strong> Select <span class="imp">ALL</span> or check every option — <span class="loc-val">Remote</span> · <span class="loc-val">Hybrid</span> · <span class="loc-val">On-site</span> · <span class="loc-val">In-person</span>. Do NOT filter Remote only — you will miss hybrid &amp; onsite jobs!</span>
+      <span class="warn-note">⚠️ Wrong country/spelling = no jobs. Use <span class="loc-val">United States</span> not "USA"/"US". Work mode: keep <span class="imp">Remote + Hybrid + Onsite</span> all selected for maximum results.</span>
+      <em>తెలుగు: location lo <span class="imp">"United States"</span> or city name exact ga type cheyandi. Work mode lo <span class="imp">Remote, Hybrid, Onsite anni select</span> cheyandi — Remote matrame filter cheyakandi, chala jobs miss avutayi</em>
+    </div>
+    <div class="tip-card tip-important">
+      <strong>Step 3 — Date posted filter ⭐ MOST IMPORTANT</strong>
+      <span>Always select: <span class="imp">Last 24 hours</span> or <span class="imp">Past 3 days</span> — apply to fresh jobs first!</span>
+      <span class="warn-note">⚠️ Skip jobs older than 3 days — already filled or too much competition.</span>
+      <em>తెలుగు: <span class="imp">"Last 24 hours"</span> / <span class="imp">"Past 3 days"</span> filter — kotha jobs ki fast ga apply cheyandi. Purana jobs skip cheyandi.</em>
+    </div>
+    <div class="tip-card tip-step4">
+      <strong>Step 4 — Job type filter</strong>
+      <span>Select: <span class="imp">Full-time</span> · Contract · <span class="imp">W2</span> (if option available)</span>
+      <em>తెలుగు: <span class="imp">Full-time</span> select cheyandi · contract kuda ok</em>
+    </div>
+    <div class="tip-card tip-warn tip-step5">
+      <strong>Step 5 — Experience level ⚠️</strong>
+      <span><span class="imp">Entry level</span> / <span class="imp">Mid level</span> — match your experience</span>
+      <span class="warn-note">⚠️ Do NOT pick <span class="imp">Senior</span> if you have 0–2 yrs — application gets rejected fast.</span>
+      <em>తెలుగు: mee experience ki match avvela filter pettandi — <span class="imp">Senior select cheyakandi</span> (0-2 yrs unte)</em>
+    </div>
+    <div class="tip-card tip-step6">
+      <strong>Step 6 — Easy Apply / Quick Apply</strong>
+      <span>Turn ON <span class="imp">"Easy Apply"</span> filter (Indeed/LinkedIn) — faster applications</span>
+      <em>తెలుగు: <span class="imp">Easy Apply</span> filter ON — easy ga resume submit avutundi</em>
+    </div>
+
+    <h3>2 · Best Filters by Portal</h3>
+    <p class="sub" style="margin-top:-4px;">Priority order — check <span class="imp">Indeed first</span>, then Priority 2 daily</p>
+    <div class="job-type job-indeed"><strong>⭐ 1. Indeed</strong> — Date: <span class="imp">Last 24 hours</span> · Work: <span class="loc-val">Remote</span> + <span class="loc-val">Hybrid</span> + <span class="loc-val">On-site</span> · <span class="imp">Easy Apply</span> · Full-time<span>తెలుగు: Indeed lo <span class="imp">"Last 24 hours"</span> + work mode anni select cheyandi</span></div>
+    <div class="job-type job-linkedin"><strong>🔥 2. Glassdoor</strong> — Date: <span class="imp">Last 24 hours</span> · Work: all modes · Full-time<span>తెలుగు: Glassdoor — recent jobs + company reviews</span></div>
+    <div class="job-type job-zip"><strong>🔥 2. ZipRecruiter</strong> — Date: <span class="imp">Last day</span> · Work: <span class="loc-val">Remote</span> · <span class="loc-val">Hybrid</span> · <span class="loc-val">On-site</span> · Full-time<span>తెలుగు: ZipRecruiter — recent jobs + all work types</span></div>
+    <div class="job-type job-dice"><strong>🔥 2. Monster</strong> — Date: <span class="imp">Past 3 days</span> · Full-time · Contract<span>తెలుగు: Monster — fresh jobs filter use cheyandi</span></div>
+    <div class="job-type job-indeed" style="background:#f3e5f5;border-color:#ce93d8;"><strong>🔥 2. Jobright AI</strong> — AI auto-match · resume tailor · <span class="imp">auto-apply</span> · track submissions · <a href="https://jobright.ai/ai-agent" target="_blank" rel="noopener" style="color:#6a1b9a;font-weight:bold;">jobright.ai</a><span>తెలుగు: AI job search — resume customize + auto apply (free trial)</span></div>
+    <div class="job-type job-linkedin"><strong>Also:</strong> LinkedIn · Dice — Date: <span class="imp">Past 24 hours</span> · Easy Apply · all work modes<span>తెలుగు: LinkedIn/Dice kuda regular ga check cheyandi</span></div>
+
+    <h3>3 · Tips for Better Interview Calls</h3>
+    <div class="tip-card tip-important">
+      <strong>✅ Apply within 1–2 hours of job posting</strong>
+      <span><span class="imp">Fresh jobs = less competition.</span> Check portals <span class="imp">2–3 times daily</span> (morning, afternoon, night).</span>
+      <em>తెలుగు: job post ayyaka <span class="imp">1-2 hours lopu</span> apply cheyandi — interview chance ekkuva</em>
+    </div>
+    <div class="tip-card tip-step1">
+      <strong>✅ Apply 10–20 jobs per day</strong>
+      <span>More applications = more recruiter calls. <span class="imp">Target: 10–20 per day.</span></span>
+      <em>తెలుగు: roju <span class="imp">10-20 jobs</span> ki apply cheyandi</em>
+    </div>
+    <div class="tip-card tip-step2">
+      <strong>✅ Match resume keywords to job description</strong>
+      <span><span class="imp">Add skills from job post</span> to your resume before applying.</span>
+      <em>తెలుగు: job description lo unna skills resume lo add cheyandi</em>
+    </div>
+    <div class="tip-card tip-step3">
+      <strong>✅ Keep LinkedIn profile updated</strong>
+      <span>Photo, headline, skills, <span class="imp">"Open to Work" ON</span> — recruiters search LinkedIn directly.</span>
+      <em>తెలుగు: LinkedIn profile complete ga pettandi · <span class="imp">"Open to Work" enable</span> cheyandi</em>
+    </div>
+    <div class="tip-card tip-warn">
+      <strong>✅ Answer recruiter call immediately ⚠️</strong>
+      <span><span class="imp">Unknown US number? Pick up</span> — could be recruiter. Call back within <span class="imp">30 min</span> if missed.</span>
+      <span class="warn-note">⚠️ Missing recruiter call = lost interview chance. Keep phone on during US hours.</span>
+      <em>తెలుగు: recruiter call vaste <span class="imp">immediate attend</span> cheyandi · miss aithe <span class="imp">30 min lopu call back</span></em>
+    </div>
+    <div class="tip-card tip-important">
+      <strong>✅ Avoid jobs posted 30+ days ago</strong>
+      <span><span class="imp">Old postings may already be filled.</span> Focus on <span class="imp">Last 24 hours / Past 3 days</span> only.</span>
+      <em>తెలుగు: <span class="imp">30 days purana jobs skip</span> cheyandi — already fill ayy untayi</em>
+    </div>
+    <div class="tip-card tip-step6">
+      <strong>✅ Save search + turn on job alerts</strong>
+      <span>Indeed/LinkedIn/Dice — save search → <span class="imp">email alert ON</span> when new job matches.</span>
+      <em>తెలుగు: <span class="imp">job alert ON</span> cheyandi — kotha job vachinapudu email vastundi</em>
+    </div>
+  </aside>
+
+  </div>
+
 </div>
 
 <script>
+var JOB_PORTALS = [
+  { name: 'Indeed', url: 'https://www.indeed.com/', priority: 1 },
+  { name: 'Glassdoor', url: 'https://www.glassdoor.com/Job/index.htm', priority: 2 },
+  { name: 'ZipRecruiter', url: 'https://www.ziprecruiter.com/', priority: 2 },
+  { name: 'Monster', url: 'https://www.monster.com/', priority: 2 },
+  { name: 'Jobright AI', url: 'https://jobright.ai/ai-agent', priority: 2, ai: true },
+  { name: 'LinkedIn Jobs', url: 'https://www.linkedin.com/jobs/', priority: 0 },
+  { name: 'Dice', url: 'https://www.dice.com/', priority: 0 },
+  { name: 'CareerBuilder', url: 'https://www.careerbuilder.com/', priority: 0 },
+  { name: 'SimplyHired', url: 'https://www.simplyhired.com/', priority: 0 },
+  { name: 'USAJobs', url: 'https://www.usajobs.gov/', priority: 0 },
+  { name: 'Snagajob', url: 'https://www.snagajob.com/', priority: 0 },
+  { name: 'FlexJobs', url: 'https://www.flexjobs.com/', priority: 0 },
+  { name: 'Wellfound', url: 'https://wellfound.com/jobs', priority: 0 },
+  { name: 'Built In', url: 'https://builtin.com/jobs', priority: 0 },
+  { name: 'Ladders', url: 'https://www.theladders.com/', priority: 0 },
+  { name: 'Remote.co', url: 'https://remote.co/remote-jobs/', priority: 0 },
+  { name: 'We Work Remotely', url: 'https://weworkremotely.com/', priority: 0 },
+  { name: 'Google Jobs', url: 'https://www.google.com/search?q=jobs&ibp=htl;jobs', priority: 0 },
+  { name: 'Robert Half', url: 'https://www.roberthalf.com/us/en/jobs', priority: 0 },
+  { name: 'Randstad USA', url: 'https://www.randstadusa.com/jobs/', priority: 0 },
+  { name: 'Adecco USA', url: 'https://www.adecco.com/en-us/jobs', priority: 0 },
+  { name: 'Hired', url: 'https://hired.com/', priority: 0 },
+  { name: 'TechFetch', url: 'https://www.techfetch.com/', priority: 0 },
+  { name: 'CyberSecJobs', url: 'https://www.cybersecjobs.com/', priority: 0 },
+  { name: 'ClearanceJobs', url: 'https://www.clearancejobs.com/', priority: 0 }
+];
+
 var CATEGORIES = [
-  {
-    id: 'software',
-    title: 'Software Engineering',
-    roles: [
-      '.NET Developer',
-      'C# Developer',
-      'ASP.NET Core Developer',
-      'Software Engineer',
-      'Backend Engineer',
-      'Full Stack Engineer',
-      'Full Stack Developer (React / Angular + Backend)',
-      'Frontend Engineer',
-      'UI Engineer',
-      'Java Developer',
-      'Backend Java Engineer',
-      'Spring Boot Developer',
-      'React Developer',
-      'Angular Developer'
-    ]
-  },
-  {
-    id: 'ai',
-    title: 'AI / Machine Learning',
-    roles: [
-      'Agentic AI Engineer',
-      'AI Engineer',
-      'AI Developer',
-      'Generative AI Engineer',
-      'LLM Engineer',
-      'Applied AI Engineer',
-      'AI Systems Engineer',
-      'Machine Learning Engineer',
-      'Software Engineer (AI/ML)',
-      'Applied Data Scientist',
-      'Data Scientist',
-      'Research Scientist (AI/ML)',
-      'NLP Engineer',
-      'Computer Vision Engineer',
-      'Deep Learning Engineer',
-      'AI Solutions Architect',
-      'AI Infrastructure Engineer',
-      'MLOps Engineer',
-      'ML Platform Engineer',
-      'Data Engineer',
-      'Analytics Engineer',
-      'Business Intelligence Engineer'
-    ]
-  },
-  {
-    id: 'sap',
-    title: 'SAP',
-    roles: [
-      'SAP FICO Consultant',
-      'SAP ABAP Developer',
-      'SAP SuccessFactors Consultant',
-      'SAP S/4HANA Consultant',
-      'SAP MM Consultant',
-      'SAP SD Consultant',
-      'SAP Basis Administrator',
-      'SAP Security Consultant',
-      'SAP GRC Consultant',
-      'SAP HANA Developer / Consultant',
-      'SAP BW/BI Consultant',
-      'SAP Integration Consultant (PI/PO, CPI)',
-      'SAP Ariba Consultant',
-      'SAP PP Consultant',
-      'SAP PM Consultant',
-      'SAP Payroll Consultant',
-      'SAP TM (Transportation Management) Consultant',
-      'SAP QM (Quality Management) Consultant',
-      'SAP Analytics Cloud (SAC) Consultant'
-    ]
-  },
-  {
-    id: 'universal',
-    title: 'Universal / Platform',
-    roles: [
-      'IT Support Specialist',
-      'Service Desk Administrator',
-      'Help Desk Administrator',
-      'System Administrator',
-      'Application Support Engineer',
-      'Production Support Engineer',
-      'Incident Management Specialist',
-      'Microsoft 365 Administrator',
-      'Active Directory Administrator',
-      'Cloud Administrator',
-      'Security Administrator',
-      'IAM Administrator',
-      'Salesforce Administrator',
-      'Salesforce Developer',
-      'Salesforce Platform Developer',
-      'ServiceNow Administrator',
-      'Workflow Administrator',
-      'Business Process Administrator',
-      'Integration Administrator',
-      'RPA Developer',
-      'RPA Administrator',
-      'Platform Administrator',
-      'Salesforce Consultant',
-      'Salesforce Business Analyst',
-      'Salesforce CPQ Consultant',
-      'Salesforce Service Cloud Consultant',
-      'Salesforce Sales Cloud Consultant',
-      'Salesforce Marketing Cloud Specialist',
-      'Salesforce Field Service Consultant',
-      'Salesforce Industries Consultant (Vlocity / OmniStudio)',
-      'Google Workspace Administrator',
-      'BI Administrator',
-      'Data Operations Specialist',
-      'Automation Specialist',
-      'Low-Code Developer',
-      'No-Code Developer',
-      'Salesforce Architect',
-      'Solution Architect',
-      'GRC Administrator',
-      'Salesforce Security Administrator',
-      'Salesforce Release Manager',
-      'Salesforce Data Cloud Consultant'
-    ]
-  }
+  { id: 'software', title: 'Software Engineering', roles: ['.NET Developer','C# Developer','ASP.NET Core Developer','Software Engineer','Backend Engineer','Full Stack Engineer','Full Stack Developer (React / Angular + Backend)','Frontend Engineer','UI Engineer','Java Developer','Backend Java Engineer','Spring Boot Developer','React Developer','Angular Developer'] },
+  { id: 'ai', title: 'AI / Machine Learning', roles: ['Agentic AI Engineer','AI Engineer','AI Developer','Generative AI Engineer','LLM Engineer','Applied AI Engineer','AI Systems Engineer','Machine Learning Engineer','Software Engineer (AI/ML)','Applied Data Scientist','Data Scientist','Research Scientist (AI/ML)','NLP Engineer','Computer Vision Engineer','Deep Learning Engineer','AI Solutions Architect','AI Infrastructure Engineer','MLOps Engineer','ML Platform Engineer','Data Engineer','Analytics Engineer','Business Intelligence Engineer'] },
+  { id: 'sap', title: 'SAP', roles: ['SAP FICO Consultant','SAP ABAP Developer','SAP SuccessFactors Consultant','SAP S/4HANA Consultant','SAP MM Consultant','SAP SD Consultant','SAP Basis Administrator','SAP Security Consultant','SAP GRC Consultant','SAP HANA Developer / Consultant','SAP BW/BI Consultant','SAP Integration Consultant (PI/PO, CPI)','SAP Ariba Consultant','SAP PP Consultant','SAP PM Consultant','SAP Payroll Consultant','SAP TM (Transportation Management) Consultant','SAP QM (Quality Management) Consultant','SAP Analytics Cloud (SAC) Consultant'] },
+  { id: 'universal', title: 'Universal / Platform', roles: ['IT Support Specialist','Service Desk Administrator','Help Desk Administrator','System Administrator','Application Support Engineer','Production Support Engineer','Incident Management Specialist','Microsoft 365 Administrator','Active Directory Administrator','Cloud Administrator','Security Administrator','IAM Administrator','Salesforce Administrator','Salesforce Developer','Salesforce Platform Developer','ServiceNow Administrator','Workflow Administrator','Business Process Administrator','Integration Administrator','RPA Developer','RPA Administrator','Platform Administrator','Salesforce Consultant','Salesforce Business Analyst','Salesforce CPQ Consultant','Salesforce Service Cloud Consultant','Salesforce Sales Cloud Consultant','Salesforce Marketing Cloud Specialist','Salesforce Field Service Consultant','Salesforce Industries Consultant (Vlocity / OmniStudio)','Google Workspace Administrator','BI Administrator','Data Operations Specialist','Automation Specialist','Low-Code Developer','No-Code Developer','Salesforce Architect','Solution Architect','GRC Administrator','Salesforce Security Administrator','Salesforce Release Manager','Salesforce Data Cloud Consultant'] }
 ];
 
 function copyText(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    return navigator.clipboard.writeText(text);
-  }
+  if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
   return new Promise(function(resolve, reject) {
     var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy') ? resolve() : reject(); }
-    catch (e) { reject(e); }
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy') ? resolve() : reject(); } catch(e) { reject(e); }
     document.body.removeChild(ta);
   });
+}
+
+function renderPortals() {
+  var p1 = [], p2 = [], rest = [];
+  JOB_PORTALS.forEach(function(p) {
+    if (p.priority === 1) p1.push(p);
+    else if (p.priority === 2) p2.push(p);
+    else rest.push(p);
+  });
+  var html = '';
+  var colorIdx = 0;
+  function link(p, cls) {
+    var extra = p.ai ? ' ai' : '';
+    return '<a class="' + cls + extra + '" href="' + p.url + '" target="_blank" rel="noopener noreferrer" title="' + p.name + '">' + p.name + '</a>';
+  }
+  function tierGrid(list, cls) {
+    return list.map(function(p) { return link(p, cls); }).join('');
+  }
+  if (p1.length) {
+    html += '<div class="portal-tier-label p1">⭐ Priority 1 — Start here daily</div>';
+    html += '<div class="portal-grid">' + tierGrid(p1, 'portal-p1') + '</div>';
+  }
+  if (p2.length) {
+    html += '<div class="portal-tier-label p2">🔥 Priority 2 — Check every day</div>';
+    html += '<div class="portal-grid">' + tierGrid(p2, 'portal-p2') + '</div>';
+  }
+  if (rest.length) {
+    html += '<div class="portal-tier-label p3">More portals</div>';
+    html += '<div class="portal-grid">' + rest.map(function(p) {
+      var c = 'portal-c' + (colorIdx++ % 8);
+      return link(p, c);
+    }).join('') + '</div>';
+  }
+  document.getElementById('portalGrid').innerHTML = html;
 }
 
 function render() {
   var root = document.getElementById('sections');
   var html = '';
-
   CATEGORIES.forEach(function(cat) {
-    html += '<section id="' + cat.id + '">';
-    html += '<h2>' + cat.title + '</h2>';
-    html += '<div class="count">' + cat.roles.length + ' roles</div>';
+    html += '<section class="cat-' + cat.id + '" id="' + cat.id + '"><h2>' + cat.title + '</h2><div class="count">' + cat.roles.length + ' roles</div>';
     html += '<table><thead><tr><th>#</th><th>Role</th><th></th></tr></thead><tbody>';
-
     cat.roles.forEach(function(role, i) {
-      var num = String(i + 1).padStart(2, '0');
-      html += '<tr>';
-      html += '<td class="num">' + num + '</td>';
-      html += '<td class="role-name">' + role + '</td>';
-      html += '<td class="copy"><button type="button" class="copy-btn" data-role="' + role.replace(/"/g, '&quot;') + '">copy</button></td>';
-      html += '</tr>';
+      html += '<tr><td class="num">' + String(i+1).padStart(2,'0') + '</td>';
+      html += '<td>' + role + '</td>';
+      html += '<td class="copy"><button type="button" class="copy-btn" data-role="' + role.replace(/"/g,'&quot;') + '">copy</button></td></tr>';
     });
-
     html += '</tbody></table></section>';
   });
-
   root.innerHTML = html;
-
   root.querySelectorAll('.copy-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var role = btn.getAttribute('data-role');
-      var label = 'copy';
-      copyText(role).then(function() {
-        btn.textContent = 'copied';
-        setTimeout(function() { btn.textContent = label; }, 1200);
-      }).catch(function() {
-        btn.textContent = 'fail';
-        setTimeout(function() { btn.textContent = label; }, 1200);
-      });
+      copyText(role).then(function() { btn.textContent = 'copied'; setTimeout(function(){ btn.textContent='copy'; },1200); });
     });
   });
 }
 
+renderPortals();
 render();
 </script>
 </body>
