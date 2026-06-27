@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US Address Directory</title>
+
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#f4f6f9;
+margin:0;
+padding:20px;
+}
+
+h1{
+text-align:center;
+}
+
+.state{
+background:#fff;
+margin-bottom:20px;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2{
+color:#0d6efd;
+}
+
+.address{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#f8f9fa;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+}
+
+.address span{
+flex:1;
+margin-right:10px;
+}
+
+button{
+background:#0d6efd;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0b5ed7;
+}
+</style>
+</head>
+
+<body>
+
+<h1>US Address Directory</h1>
+
+<div class="state">
+<h2>California</h2>
+
+<div class="address"><span>Apt 305, 1234 North Mathilda Ave, Sunnyvale, CA 94087</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 210, 5678 El Camino Real, Santa Clara, CA 95051</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>9102 Fremont Blvd, Apt B12, Fremont, CA 94538</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>3456 Saratoga Ave, San Jose, CA 95129</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>7890 Tasman Dr, Sunnyvale, CA 94089</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>1123 Park Ave, San Jose, CA 95126</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>4567 Mission College Blvd, Santa Clara, CA 95054</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>8901 Warm Springs Blvd, Fremont, CA 94539</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 1503, 2345 California St, Palo Alto, CA 94304</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>6789 Lawrence Expy, Sunnyvale, CA 94086</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<div class="state">
+<h2>Washington</h2>
+
+<div class="address"><span>Apt 412, 14567 NE 4th St, Bellevue, WA 98007</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 105, 2345 148th Ave NE, Redmond, WA 98052</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>8901 164th Ave NE, Apt 220, Redmond, WA 98052</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>5678 Lake Washington Blvd, Seattle, WA 98122</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 301, 1234 Main St, Bellevue, WA 98004</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>9102 NE 8th St, Bellevue, WA 98005</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 508, 3456 156th Ave SE, Bellevue, WA 98007</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>7890 Willows Rd NE, Redmond, WA 98052</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>11234 140th Ave NE, Kirkland, WA 98034</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 609, 567 148th Ave SE, Bellevue, WA 98007</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<div class="state">
+<h2>New York</h2>
+
+<div class="address"><span>Apt 12F, 456 E 34th St, New York, NY 10016</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 3B, 789 Lexington Ave, New York, NY 10022</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>1234 Broadway, Apt 567, New York, NY 10001</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>890 5th Ave, Apt 2104, New York, NY 10021</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 401, 234 W 42nd St, New York, NY 10036</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>5678 Queens Blvd, Apt 1203, Queens, NY 11101</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 805, 910 Park Ave, New York, NY 10028</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>1123 1st Ave, New York, NY 10065</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>3456 Madison Ave, New York, NY 10017</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>678 3rd Ave, New York, NY 10017</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<div class="state">
+<h2>Texas</h2>
+
+<div class="address"><span>Apt 203, 12345 N Lamar Blvd, Austin, TX 78753</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 415, 8901 Research Blvd, Austin, TX 78758</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>2346 Parmer Ln, Austin, TX 78727</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>5678 McNeil Dr, Austin, TX 78729</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 301, 9100 Independence Pkwy, Plano, TX 75025</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>3456 Preston Rd, Plano, TX 75093</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>7890 Coit Rd, Plano, TX 75024</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>11234 Dallas Pkwy, Dallas, TX 75254</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>5678 Frankford Rd, Dallas, TX 75252</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>1234 Legacy Dr, Plano, TX 75024</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<div class="state">
+<h2>Massachusetts</h2>
+
+<div class="address"><span>Apt 4R, 1234 Commonwealth Ave, Boston, MA 02135</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 212, 567 Massachusetts Ave, Cambridge, MA 02139</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>8901 Beacon St, Apt 305, Boston, MA 02108</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>2345 Boylston St, Boston, MA 02215</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 601, 6789 Huntington Ave, Boston, MA 02115</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 110, 1123 Cambridge St, Cambridge, MA 02141</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>3456 Harvard Ave, Allston, MA 02134</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>7890 Brighton Ave, Boston, MA 02135</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 807, 901 Commonwealth Ave, Boston, MA 02215</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>234 Brookline Ave, Apt 512, Boston, MA 02215</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<div class="state">
+<h2>Illinois</h2>
+
+<div class="address"><span>Apt 305, 1234 N Michigan Ave, Chicago, IL 60611</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 412, 5678 Devon Ave, Chicago, IL 60646</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>9100 W Higgins Rd, Apt 220, Rosemont, IL 60018</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>3456 Schaumburg Rd, Schaumburg, IL 60193</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 1501, 7890 N Clark St, Chicago, IL 60626</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 603, 1123 E Ogden Ave, Naperville, IL 60563</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>2345 W 95th St, Chicago, IL 60643</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>6789 E Woodfield Rd, Schaumburg, IL 60173</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 409, 1234 Town Center, Naperville, IL 60564</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>5678 Arlington Heights Rd, Arlington Heights, IL 60004</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<div class="state">
+<h2>Georgia</h2>
+
+<div class="address"><span>Apt 212, 1234 Peachtree Rd NE, Atlanta, GA 30326</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 405, 5678 Buford Hwy, Atlanta, GA 30340</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>9101 Roswell Rd, Apt 110, Atlanta, GA 30350</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>2345 North Druid Hills Rd, Atlanta, GA 30329</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 701, 6789 Sandy Springs Cir, Atlanta, GA 30328</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Unit 302, 11234 Clairmont Rd, Decatur, GA 30030</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>3456 Cobb Pkwy, Marietta, GA 30060</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>7890 Jimmy Carter Blvd, Norcross, GA 30093</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>Apt 514, 1234 Holcomb Bridge Rd, Alpharetta, GA 30022</span><button onclick="copyText(this)">Copy</button></div>
+<div class="address"><span>5678 Old Alabama Rd, Roswell, GA 30076</span><button onclick="copyText(this)">Copy</button></div>
+
+</div>
+
+<script>
+function copyText(btn){
+const text = btn.parentElement.querySelector("span").innerText;
+navigator.clipboard.writeText(text);
+
+btn.innerText = "Copied ✓";
+setTimeout(()=> btn.innerText = "Copy", 1200);
+}
+</script>
+
+</body>
+</html>
